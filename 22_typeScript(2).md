@@ -277,6 +277,7 @@ this是JavaScript中一个比较难以理解和把握的知识点：
 const info = {
     name: 'wts',
     sayHello() {
+        // this是可以被typescript推导出来的
         console.log(this.name)
     }
 }
@@ -286,10 +287,6 @@ info.sayHello()
 上面的代码是可以正常运行的，也就是TypeScript在编译时，认为我们的this是可以正确去使用的： 
 
 - TypeScript认为函数 sayHello 有一个对应的this的外部对象 info，所以在使用时，就会把this当做该对象。
-
-
-
-![image-20210725121037863](C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210725121037863.png)
 
 
 
@@ -314,7 +311,7 @@ info.sayHello()
 
 - 这里我们再次强调一下，TypeScript进行类型检测的目的是让我们的代码更加的安全； 
 - 所以这里对于 sayHello 的调用来说，我们虽然将其放到了info中，通过info去调用，this依然是指向info对象的； 
-- 但是对于TypeScript编译器来说，这个代码是非常不安全的，因为我们也有可能直接调用函数，或者通过别的对象来 调用函数；
+- 但是对于TypeScript编译器来说，这个代码是非常不安全的，因为我们也有可能直接调用函数，或者通过别的对象来调用函数；
 
 
 
@@ -325,16 +322,26 @@ info.sayHello()
 这个时候，通常TypeScript会要求我们明确的指定this的类型：
 
 ```ts
-type NameType = {
-    name: string
+type ThisType = { name: string };
+
+function eating(this: ThisType, message: string) {
+  console.log(this.name + " eating", message);
 }
 
-function sayHello(this: NameType) {
-    console.log(this.name)
-}
+const info = {
+  name: "why",
+  eating: eating,
+};
+
+// 隐式绑定
+info.eating("哈哈哈");  // why eating 哈哈哈
+
+// 显示绑定
+eating.call({name: "kobe"}, "呵呵呵") // kobe eating 呵呵呵
+eating.apply({name: "james"}, ["嘿嘿嘿"]) // james eating 嘿嘿嘿
+
+export {};
 ```
-
-![image-20210725121453645](C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210725121453645.png)
 
 
 
@@ -344,16 +351,41 @@ function sayHello(this: NameType) {
 
 在TypeScript中，如果我们编写了一个add函数，希望可以对字符串和数字类型进行相加，应该如何编写呢？ 
 
+```ts
+function sum(a1: number | string, a2: number | string): number | string {
+  return a1 + a2
+}
+```
+
 我们可能会这样来编写，但是其实是错误的：
 
 ![image-20250811164714025](./assets/22_typeScript(2).assets/image-20250811164714025.png)
 
+解决方案一：
+
+```ts
+/**
+ * 通过联合类型有两个缺点:
+ *  1.进行很多的逻辑判断(类型缩小)
+ *  2.返回值的类型依然是不能确定
+ */
+function add(a1: number | string, a2: number | string) {
+  if (typeof a1 === "number" && typeof a2 === "number") {
+    return a1 + a2
+  } else if (typeof a1 === "string" && typeof a2 === "string") {
+    return a1 + a2
+  }
+
+  // return a1 + a2;
+}
+```
+
 那么这个代码应该如何去编写呢？ 
 
-- 在TypeScript中，我们可以去编写不同的重载签名（overload signatures）来表示函数可以以不同的方式进行 调用； 
+- 在TypeScript中，我们可以去编写不同的重载签名（overload signatures）来表示函数可以以不同的方式进行调用； 
 - 一般是编写两个或者以上的重载签名，再去编写一个通用的函数以及实现；
 
-
+解决方案二：
 
 
 
@@ -366,7 +398,12 @@ function sayHello(this: NameType) {
 ```ts
 function sum(a1: number, a2: number): number;
 function sum(a1: string, a2: string): string;
+// 函数的实现
 function sum(a1: any, a2: any): any {
+  // 可以获取长度
+  if (typeof a1 === 'string' && typeof a2 === 'string') {
+    return a1.length + a2.length
+  }
     return a1 + a2
 }
 
@@ -374,11 +411,13 @@ console.log(sum(20, 30))
 console.log(sum('aaa', 'bbb'))
 ```
 
-但是注意，有实现提的函数，是不能直接被调用的：
+但是注意，有实现体的函数，是不能直接被调用的，必须要匹配到重载函数，如果重载函数一个都没匹配到，那么就会报错：
 
 ```ts
 sum({name: 'wts'}, {age: 18})
 ```
+
+![image-20250813215813463](./assets/22_typeScript(2).assets/image-20250813215813463.png)
 
 
 
@@ -396,6 +435,8 @@ sum({name: 'wts'}, {age: 18})
 function getLength(a: string | any[]) {
     return a.length
 }
+getLength('abc')
+getLength(['abc', 'cba', 'nba'])
 ```
 
 - 方案二：实现函数重载来实现；
@@ -406,25 +447,13 @@ function getLength(a: any[]): number;
 function getLength(a: any) {
     return a.length
 }
+getLength('abc')
+getLength(['abc', 'cba', 'nba'])
 ```
-
-
-
-
 
 在开发中我们选择使用哪一种呢？ 
 
 - 在可能的情况下，尽量选择使用联合类型来实现；
-
-![image-20210725172434918](C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210725172434918.png)
-
-![image-20210725173357335](C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210725173357335.png)
-
-![image-20210725173528169](C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210725173528169.png)
-
-![image-20210725173846584](C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210725173846584.png)
-
-![image-20210725174921646](C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210725174921646.png)
 
 
 
@@ -432,7 +461,7 @@ function getLength(a: any) {
 
 ## 认识类的使用
 
-在早期的JavaScript开发中（ES5）我们需要通过函数和原型链来实现类和继承，从ES6开始，引入了class关键字，可以 更加方便的定义和使用类。 
+在早期的JavaScript开发中（ES5）我们需要通过函数和原型链来实现类和继承，从ES6开始，引入了class关键字，可以更加方便的定义和使用类。 
 
 TypeScript作为JavaScript的超集，也是支持使用class关键字的，并且还可以对类的属性和方法等进行静态类型检测。 
 
@@ -448,6 +477,11 @@ TypeScript作为JavaScript的超集，也是支持使用class关键字的，并�
 - 在面向对象的世界里，任何事物都可以使用类的结构来描述； 
 - 类中包含特有的属性和方法
 
+编程范式分为：
+
+- 面向对象编程
+- 函数式编程
+
 
 
 
@@ -461,34 +495,70 @@ TypeScript作为JavaScript的超集，也是支持使用class关键字的，并�
 我们可以声明一些类的属性：在类的内部声明类的属性以及对应的类型
 
 - 如果类型没有声明，那么它们默认是any的； 
+
 - 我们也可以给属性设置初始化值； 
-- 在默认的strictPropertyInitialization模式下面我们的属性是必须初始 化的，如果没有初始化，那么编译时就会报错；
-  - 如果我们在strictPropertyInitialization模式下确实不希望给属性初 始化，可以使用 name!: string语法；
+
+  ```ts
+  // 初始化方案1：
+  class Person1 {
+      name: string = ''
+      age: number = 0
+      
+      running() {
+          console.log(this.name + ' running')
+      }
+      
+      eating() {
+          console.log(this.name + ' eating')
+      }
+  }
+  
+  // 初始化方案2：
+  class Person {
+      name: string
+      age: number
+      constructor(name: string, age: number) {
+          this.name = name
+          this.age = age
+      }
+      
+      running() {
+          console.log(this.name + ' running')
+      }
+      
+      eating() {
+          console.log(this.name + ' eating')
+      }
+  }
+  ```
+
+- 在默认的strictPropertyInitialization模式下面我们的属性是必须初始化的，如果没有初始化，那么编译时就会报错；
+  - 如果我们在strictPropertyInitialization模式下确实不希望给属性初始化，可以使用 name!: string语法；
+
+    ```ts
+    class Person {
+        name!: string
+        age: number
+        constructor(name: string, age: number) {
+            // this.name = name
+            this.age = age
+        }
+        
+        running() {
+            console.log(this.name + ' running')
+        }
+        
+        eating() {
+            console.log(this.name + ' eating')
+        }
+    }
+    ```
 
 类可以有自己的构造函数constructor，当我们通过new关键字创建一个 实例时，构造函数会被调用； 
 
 - 构造函数不需要返回任何值，默认返回当前创建出来的实例；
 
 类中可以有自己的函数，定义的函数称之为方法；
-
-```ts
-class Person {
-    name!: string
-    age: number
-    constructor(name: string, age: number) {
-        // this.name = name
-        this.age = age
-    }
-    
-    running() {
-        console.log(this.name + ' running')
-    }
-    
-    eating() {
-        console.log(this.name + ' eating')
-    }
-}
-```
 
 
 
@@ -506,48 +576,96 @@ class Person {
 - 在构造函数中，我们可以通过super来调用父类的构造方法，对父类中的属性进行初始化；
 
 ```ts
+
+class Person {
+  name: string
+  age: number
+  constructor(name: string, age: number) {
+    this.name = name;
+    this.age = age
+  }
+  eating() {
+    console.log('eating')
+  }
+}
+
+// 继承
 class Student extends Person {
     sno: number
     constructor(name: string, age: number, sno: number) {
+      	// 调用父类的构造器
         super(name, age)
         this.sno = sno
     }
     studying() {
         console.log(this.name + ' studying')
     }
+  
+  	// 这里重写了父类的方法（重写）
     eating() {
-        console.log('student eating')
+      // 重写前,可以先执行父类的方法（也可以不执行）
+      super.eating()
+      console.log('student eating')
     }
+
     running() {
         super.running();
         console.log('student running')
     }
 }
+cosnt stu = new Student('wts', 18, 111)
+console.log(stu.name)
+console.log(stu.age)
+console.log(stu.sno)
 ```
 
 
 
+## 类的多态
 
+```ts
+// 父类
+class Animal {
+  action() {
+    console.log("animal action")
+  }
+}
 
-1、
+class Dog extends Animal {
+  // 重写父类的方法
+  action() {
+    console.log("dog running!!!")
+  }
+}
 
-<img src="C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210725200504412.png" alt="image-20210725200504412" style="zoom:50%;" />
+class Fish extends Animal {
+  // 重写父类的方法
+  action() {
+    console.log("fish swimming")
+  }
+}
 
+class Person extends Animal {
 
+}
 
-2、
+// animal: dog/fish
+function makeActions(animals: Animal[]) {
+  animals.forEach(animal => {
+    // 这里执行的一定是重写后的方法，这里就表现出来多态，每一个animal的action表现的不一样
+    animal.action()
+  })
+}
 
-<img src="C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210725200654232.png" alt="image-20210725200654232" style="zoom:50%;" />
+makeActions([new Dog(), new Fish(), new Person()])
 
-<img src="C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210725200551437.png" alt="image-20210725200551437" style="zoom:50%;" />
+```
 
+多态的前提，父类引用（类型）指向子类对象
 
+多态：相同类型的函数，但是在执行的过程中的表现不一致，就称为多态
 
-类的多态
-
-![image-20210725204951487](C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210725204951487.png)
-
-![image-20210725205108366](C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210725205108366.png)
+多态的目的是为了写出更加具备通用性的代码
 
 
 
@@ -563,51 +681,57 @@ class Student extends Person {
 
 public是默认的修饰符，也是可以直接访问的，我们这里来演示一下protected和private。
 
+protected（受保护的）:
+
 ```ts
+// protected: 在类内部和子类中可以访问
 class Person {
-    protected name: string
-    constructor(name: string) {
-        this.name = name;
-    }
+  protected name: string = "123"
 }
 
 class Student extends Person {
-    constructor(name: string) {
-        super(name)
-    }
-    running() {
-        console.log(this.name + ' running')
-    }
+  getName() {
+    return this.name
+  }
 }
+const p = new Person()
+console.log(p.name) // 报错 属性“name”受保护，只能在类“Person”及其子类中访问。
+
+const stu = new Student()
+console.log(stu.getName())
+
+export {}
 ```
 
 
+
+private:
 
 ```ts
 class Person {
-    private name: string
-    
-    constructor(name: string) {
-        this.name = name
-    }
+  private name: string = ""
+
+  // 封装了两个方法, 通过方法来访问name
+  getName() {
+    return this.name
+  }
+
+  setName(newName) {
+    this.name = newName
+  }
 }
 
-const p = new Person('wts')
-// Property 'name' is private and only accessible within
-// console.log(p.name)
+const p = new Person()
+// 获取值
+console.log(p.getName())
+
+// 设置值
+p.setName("why")
+
+export {}
 ```
 
-
-
-<img src="C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210725210553103.png" alt="image-20210725210553103" style="zoom:50%;" />
-
-<img src="C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210725210739883.png" alt="image-20210725210739883" style="zoom:50%;" />
-
-<img src="C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210725211257753.png" alt="image-20210725211257753" style="zoom:50%;" />
-
-![image-20210725212502755](C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210725212502755.png)
-
-
+通过函数的方式间接的在类的外面设置和获取name
 
 
 
