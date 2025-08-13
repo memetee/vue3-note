@@ -261,11 +261,11 @@
 
 接下来我们来看一下同一个计算多次使用，计算属性和methods的差异：
 
-![image-20250718142626277](./4_Vue3的Options-API.assets/image-20250718142626277.png)
+![image-20250718142626277](./assets/4_Vue3的Options-API.assets/image-20250718142626277.png)
 
- ![image-20250718142631249](./4_Vue3的Options-API.assets/image-20250718142631249.png)
+ ![image-20250718142631249](./assets/4_Vue3的Options-API.assets/image-20250718142631249.png)
 
-![image-20250718142640712](./4_Vue3的Options-API.assets/image-20250718142640712.png)
+![image-20250718142640712](./assets/4_Vue3的Options-API.assets/image-20250718142640712.png)
 
 
 
@@ -277,7 +277,7 @@
 - 在数据不发生变化时，计算属性是不需要重新计算的；
 - 但是如果依赖的数据发生变化，在使用时，计算属性依然会重新进行计算；
 
-![image-20250718142654714](./4_Vue3的Options-API.assets/image-20250718142654714.png)
+![image-20250718142654714](./assets/4_Vue3的Options-API.assets/image-20250718142654714.png)
 
 计算属性只执行了一次，methods执行了多次
 
@@ -428,7 +428,7 @@
 
 - 事实上非常的简单，Vue源码内部只是做了一个逻辑判断而已；
 
-![image-20250718142737018](./4_Vue3的Options-API.assets/image-20250718142737018.png)
+![image-20250718142737018](./assets/4_Vue3的Options-API.assets/image-20250718142737018.png)
 
 
 
@@ -440,7 +440,7 @@
 
 如果什么都没有就是一个 NOOP,它是一个空函数
 
-![image-20250718151247280](./4_Vue3的Options-API.assets/image-20250718151247280.png)
+![image-20250718151247280](./assets/4_Vue3的Options-API.assets/image-20250718151247280.png)
 
 
 
@@ -551,7 +551,7 @@
 
 侦听器的打印，vue是把data中的数据交给了proxy管理，所以这里打印的是一个proxy对象
 
-![image-20250718152457566](./4_Vue3的Options-API.assets/image-20250718152457566.png)
+![image-20250718152457566](./assets/4_Vue3的Options-API.assets/image-20250718152457566.png)
 
 侦听器的基本使用：
 
@@ -894,7 +894,7 @@
 
 现在我们来做一个相对综合一点的练习：书籍购物车
 
-![image-20250718143036125](./4_Vue3的Options-API.assets/image-20250718143036125.png)
+![image-20250718143036125](./assets/4_Vue3的Options-API.assets/image-20250718143036125.png)
 
 
 
@@ -1094,7 +1094,7 @@ vue3不支持过滤器了，推荐两种做法：
 
 ## 浅拷贝
 
-![浅拷贝的过程](./4_Vue3的Options-API.assets/浅拷贝的过程.png)
+![浅拷贝的过程](./assets/4_Vue3的Options-API.assets/浅拷贝的过程.png)
 
 
 

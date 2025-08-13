@@ -6,11 +6,11 @@
 
 - 可以使用直接导入的 onX 函数注册生命周期钩子；
 
-![image-20250725142051167](./17_composition API(3).assets/image-20250725142051167.png)
+![image-20250725142051167](./assets/17_composition API(3).assets/image-20250725142051167.png)
 
-![image-20250725142055868](./17_composition API(3).assets/image-20250725142055868.png)
+![image-20250725142055868](./assets/17_composition API(3).assets/image-20250725142055868.png)
 
-![image-20250725142102846](./17_composition API(3).assets/image-20250725142102846.png)
+![image-20250725142102846](./assets/17_composition API(3).assets/image-20250725142102846.png)
 
 这段话的意思就是beforeCreate和created中执行代码的话，直接写在setup中就行了，setup的执行实际上比beforeCreate和created还要早
 
@@ -33,7 +33,7 @@
   - name：提供的属性名称； 
   - value：提供的属性值；
 
-![image-20250725142113811](./17_composition API(3).assets/image-20250725142113811.png)
+![image-20250725142113811](./assets/17_composition API(3).assets/image-20250725142113811.png)
 
 
 
@@ -46,7 +46,7 @@
   - 要 inject 的 property 的 name； 
   - 默认值；
 
-![image-20250725142120370](./17_composition API(3).assets/image-20250725142120370.png)
+![image-20250725142120370](./assets/17_composition API(3).assets/image-20250725142120370.png)
 
 provide和inject都是在vue中解构出来的。
 
@@ -64,7 +64,7 @@ provide和inject都是在vue中解构出来的。
 
 为了增加 provide 值和 inject 值之间的响应性，我们可以在 provide 值时使用 ref 和 reactive。
 
-![image-20250725142133025](./17_composition API(3).assets/image-20250725142133025.png)
+![image-20250725142133025](./assets/17_composition API(3).assets/image-20250725142133025.png)
 
 这个时候就可以在这里修改counter和info了，子组件用的时候也会是响应式的
 
@@ -92,7 +92,7 @@ provide和inject都是在vue中解构出来的。
 
 - 我们可以将修改方法进行共享，在后代组件中进行调用；
 
-![image-20250725142140165](./17_composition API(3).assets/image-20250725142140165.png)
+![image-20250725142140165](./assets/17_composition API(3).assets/image-20250725142140165.png)
 
 
 
@@ -106,7 +106,7 @@ provide和inject都是在vue中解构出来的。
 
 ./App.vue
 
-![image-20250725145606878](./17_composition API(3).assets/image-20250725145606878.png)
+![image-20250725145606878](./assets/17_composition API(3).assets/image-20250725145606878.png)
 
 这些代码可能看着还是很多
 
@@ -173,7 +173,7 @@ export default function() {
 
 ## useTitle
 
-![image-20250725150311568](./17_composition API(3).assets/image-20250725150311568.png)
+![image-20250725150311568](./assets/17_composition API(3).assets/image-20250725150311568.png)
 
 这里是决定页面窗口上方的title名称的，但是有时候我们想要改掉这个title
 
@@ -501,7 +501,7 @@ Vue推荐在绝大数情况下使用模板来创建你的HTML，然后一些特�
 - h() 函数是一个用于创建 vnode 的一个函数； 
 - 其实更准确的命名是 createVNode() 函数，但是为了简便在Vue将之简化为 h() 函数；
 
-![image-20250725154644060](./17_composition API(3).assets/image-20250725154644060.png)
+![image-20250725154644060](./assets/17_composition API(3).assets/image-20250725154644060.png)
 
 
 
@@ -513,15 +513,15 @@ h()函数 如何使用呢？它接受三个参数：
 
 元素类型
 
-![image-20250725142238372](./17_composition API(3).assets/image-20250725142238372.png)
+![image-20250725142238372](./assets/17_composition API(3).assets/image-20250725142238372.png)
 
 属性
 
-![image-20250725142243112](./17_composition API(3).assets/image-20250725142243112.png)
+![image-20250725142243112](./assets/17_composition API(3).assets/image-20250725142243112.png)
 
 子元素
 
-![image-20250725142249189](./17_composition API(3).assets/image-20250725142249189.png)
+![image-20250725142249189](./assets/17_composition API(3).assets/image-20250725142249189.png)
 
 
 
@@ -560,7 +560,7 @@ h函数可以在两个地方使用：
 </style>
 ```
 
-![image-20250725155441989](./17_composition API(3).assets/image-20250725155441989.png)
+![image-20250725155441989](./assets/17_composition API(3).assets/image-20250725155441989.png)
 
 注意：因为我们不需要编译template，我们自己生成VNode，所以template就可以不要了
 
@@ -601,11 +601,11 @@ h函数可以在两个地方使用：
 </style>
 ```
 
-![image-20250725160228474](./17_composition API(3).assets/image-20250725160228474.png)
+![image-20250725160228474](./assets/17_composition API(3).assets/image-20250725160228474.png)
 
 render中的this指向的是vue实例，和methods中的this一样
 
-![image-20250725160551538](./17_composition API(3).assets/image-20250725160551538.png)
+![image-20250725160551538](./assets/17_composition API(3).assets/image-20250725160551538.png)
 
 
 
@@ -712,11 +712,11 @@ npm install @vue/babel-plugin-jsx -D
 
 在babel.config.js配置文件中配置插件:
 
-![image-20250725142407262](./17_composition API(3).assets/image-20250725142407262.png)
+![image-20250725142407262](./assets/17_composition API(3).assets/image-20250725142407262.png)
 
-![image-20250725142413137](./17_composition API(3).assets/image-20250725142413137.png)
+![image-20250725142413137](./assets/17_composition API(3).assets/image-20250725142413137.png)
 
-![image-20250725161928625](./17_composition API(3).assets/image-20250725161928625.png)
+![image-20250725161928625](./assets/17_composition API(3).assets/image-20250725161928625.png)
 
 现在不需要配，也就是不需要下载npm install @vue/babel-plugin-jsx -D，现在可以直接使用，脚手架应该是已经支持了
 
@@ -726,7 +726,7 @@ npm install @vue/babel-plugin-jsx -D
 
 ## jsx计数器案例
 
-![image-20250725142420658](./17_composition API(3).assets/image-20250725142420658.png)
+![image-20250725142420658](./assets/17_composition API(3).assets/image-20250725142420658.png)
 
 
 
@@ -738,13 +738,13 @@ npm install @vue/babel-plugin-jsx -D
 
 ./HelloWorld.vue
 
-![image-20250725142429222](./17_composition API(3).assets/image-20250725142429222.png)
+![image-20250725142429222](./assets/17_composition API(3).assets/image-20250725142429222.png)
 
 
 
 ./App.vue
 
-![image-20250725142435113](./17_composition API(3).assets/image-20250725142435113.png)
+![image-20250725142435113](./assets/17_composition API(3).assets/image-20250725142435113.png)
 
 这种代码通过babel生成了h函数，然后还是render函数在调用h函数后，生成了VNode，然后VNode生成真实dom
 
@@ -776,7 +776,7 @@ npm install @vue/babel-plugin-jsx -D
 
 ## 实现方式一：聚焦的默认实现
 
-![image-20250725142445280](./17_composition API(3).assets/image-20250725142445280.png)
+![image-20250725142445280](./assets/17_composition API(3).assets/image-20250725142445280.png)
 
 
 
@@ -913,7 +913,7 @@ app.mount('#app');
 </style>
 ```
 
-![image-20250725203430524](./17_composition API(3).assets/image-20250725203430524.png)
+![image-20250725203430524](./assets/17_composition API(3).assets/image-20250725203430524.png)
 
 
 
@@ -929,9 +929,9 @@ app.mount('#app');
 
 在我们的生命周期中，我们可以通过 bindings 获取到对应的内容：
 
-![image-20250725142516234](./17_composition API(3).assets/image-20250725142516234.png)
+![image-20250725142516234](./assets/17_composition API(3).assets/image-20250725142516234.png)
 
-![image-20250725142525244](./17_composition API(3).assets/image-20250725142525244.png)
+![image-20250725142525244](./assets/17_composition API(3).assets/image-20250725142525244.png)
 
 这里打印的是
 
@@ -945,7 +945,7 @@ app.mount('#app');
 
 
 
-![image-20250725142601605](./17_composition API(3).assets/image-20250725142601605.png)
+![image-20250725142601605](./assets/17_composition API(3).assets/image-20250725142601605.png)
 
 
 
@@ -1138,7 +1138,7 @@ Teleport是什么呢？
 
 可以发现正常挂载到app下面的元素，挂载到了why元素下面
 
-![image-20250725205546801](./17_composition API(3).assets/image-20250725205546801.png)
+![image-20250725205546801](./assets/17_composition API(3).assets/image-20250725205546801.png)
 
 有多个teleport的话，他们会合并到一起
 
@@ -1154,11 +1154,11 @@ Teleport是什么呢？
 
 - 我们可以在 teleport 中使用组件，并且也可以给他传入一些数据；
 
-![image-20250725142630809](./17_composition API(3).assets/image-20250725142630809.png)
+![image-20250725142630809](./assets/17_composition API(3).assets/image-20250725142630809.png)
 
 
 
-![image-20250725142637703](./17_composition API(3).assets/image-20250725142637703.png)
+![image-20250725142637703](./assets/17_composition API(3).assets/image-20250725142637703.png)
 
 
 
@@ -1168,13 +1168,13 @@ Teleport是什么呢？
 
 如果我们将多个teleport应用到同一个目标上（to的值相同），那么这些目标会进行合并：
 
-![image-20250725142646079](./17_composition API(3).assets/image-20250725142646079.png)
+![image-20250725142646079](./assets/17_composition API(3).assets/image-20250725142646079.png)
 
 
 
 实现效果如下：
 
-![image-20250725142652854](./17_composition API(3).assets/image-20250725142652854.png)
+![image-20250725142652854](./assets/17_composition API(3).assets/image-20250725142652854.png)
 
 
 
@@ -1196,11 +1196,11 @@ Teleport是什么呢？
 
 ## 插件的编写方式
 
-![image-20250725142706469](./17_composition API(3).assets/image-20250725142706469.png)
+![image-20250725142706469](./assets/17_composition API(3).assets/image-20250725142706469.png)
 
 
 
-![image-20250725142713148](./17_composition API(3).assets/image-20250725142713148.png)
+![image-20250725142713148](./assets/17_composition API(3).assets/image-20250725142713148.png)
 
 
 

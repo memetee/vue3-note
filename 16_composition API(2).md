@@ -36,7 +36,7 @@ shallowReadonly
 
 如果我们使用ES6的解构语法，对reactive返回的对象进行解构获取值，那么之后无论是修改结构后的变量，还是修改reactive 返回的state对象，数据都不再是响应式的，相当于他们已经断开了响应式链接：
 
-![image-20250725085400388](./16_composition API(2).assets/image-20250725085400388.png)
+![image-20250725085400388](./assets/16_composition API(2).assets/image-20250725085400388.png)
 
 相当于:
 
@@ -52,7 +52,7 @@ let age = 18
 - Vue为我们提供了一个toRefs的函数，可以将reactive返回的对象中的属性都转成ref； 
 - 那么我们再次进行结构出来的 name 和 age 本身都是 ref的；
 
-![image-20250725085407451](./16_composition API(2).assets/image-20250725085407451.png)
+![image-20250725085407451](./assets/16_composition API(2).assets/image-20250725085407451.png)
 
 这样就相当于创建了两个ref
 
@@ -60,7 +60,7 @@ let age = 18
 
 如果我们只希望转换一个reactive对象中的属性为ref, 那么可以使用toRef的方法：
 
-![image-20250725085416483](./16_composition API(2).assets/image-20250725085416483.png)
+![image-20250725085416483](./assets/16_composition API(2).assets/image-20250725085416483.png)
 
 注意：toRef不需要再解构了
 
@@ -119,7 +119,7 @@ triggerRef
 
 - 手动触发和 shallowRef 相关联的副作用：
 
-![image-20250725085439364](./16_composition API(2).assets/image-20250725085439364.png)
+![image-20250725085439364](./assets/16_composition API(2).assets/image-20250725085439364.png)
 
 
 
@@ -210,11 +210,11 @@ export default function(value, delay = 300) {
 
   computed默认的getter
 
-![image-20250725085548393](./16_composition API(2).assets/image-20250725085548393.png)
+![image-20250725085548393](./assets/16_composition API(2).assets/image-20250725085548393.png)
 
 computed也可以有自己的getter和setter
 
-![image-20250725085556252](./16_composition API(2).assets/image-20250725085556252.png)
+![image-20250725085556252](./assets/16_composition API(2).assets/image-20250725085556252.png)
 
 computed这个函数的返回值是一个ref对象，所以在设置值的时候就要
 
@@ -252,7 +252,7 @@ fullName.value = 'coder wts'
 - 首先，watchEffect传入的函数会被立即执行一次，并且在执行的过程中会收集依赖； 
 - 其次，只有收集的依赖发生变化时，watchEffect传入的函数才会再次执行；
 
-![image-20250725085607802](./16_composition API(2).assets/image-20250725085607802.png)
+![image-20250725085607802](./assets/16_composition API(2).assets/image-20250725085607802.png)
 
 注意：这里没有指定监听某一个属性，而是直接传入了一个函数，在这个函数中任何一个响应式对象发生变化，这个函数就会重新执行
 
@@ -266,7 +266,7 @@ fullName.value = 'coder wts'
 
 比如在上面的案例中，我们age达到20的时候就停止侦听：
 
-![image-20250725085615922](./16_composition API(2).assets/image-20250725085615922.png)
+![image-20250725085615922](./assets/16_composition API(2).assets/image-20250725085615922.png)
 
 
 
@@ -284,7 +284,7 @@ fullName.value = 'coder wts'
 - 当副作用即将重新执行 或者 侦听器被停止 时会执行该函数传入的回调函数； 
 - 我们可以在传入的回调函数中，执行一些清除工作；
 
-![image-20250725085630009](./16_composition API(2).assets/image-20250725085630009.png)
+![image-20250725085630009](./assets/16_composition API(2).assets/image-20250725085630009.png)
 
 这里是组件销毁的时候，那么watchEffect也会销毁，那么在销毁的时候调用onInvalidate传入一个函数，函数中就可以做一些清除副作用（取消请求，清除计时器等）的操作了
 
@@ -298,7 +298,7 @@ fullName.value = 'coder wts'
 
 - 其实非常简单，我们只需要定义一个ref对象，绑定到元素或者组件的ref属性上即可；
 
-![image-20250725085640111](./16_composition API(2).assets/image-20250725085640111.png)
+![image-20250725085640111](./assets/16_composition API(2).assets/image-20250725085640111.png)
 
 上面如果打印titleRef的话是null，因为titleRef需要等到挂载以后才会有值，那么我们可以这样做
 
@@ -333,9 +333,9 @@ fullName.value = 'coder wts'
 
 - 如果我们希望在副作用函数中获取到元素，是否可行呢？
 
-![image-20250725085649569](./16_composition API(2).assets/image-20250725085649569.png)
+![image-20250725085649569](./assets/16_composition API(2).assets/image-20250725085649569.png)
 
-![image-20250725085655932](./16_composition API(2).assets/image-20250725085655932.png)
+![image-20250725085655932](./assets/16_composition API(2).assets/image-20250725085655932.png)
 
 我们会发现打印结果打印了两次： 
 
@@ -358,7 +358,7 @@ fullName.value = 'coder wts'
 
 我们可以设置副作用函数的执行时机：
 
-![image-20250725085704662](./16_composition API(2).assets/image-20250725085704662.png)
+![image-20250725085704662](./assets/16_composition API(2).assets/image-20250725085704662.png)
 
 watchEffect默认会执行一次，但是设置为post后就会在dom挂载完之后执行一次了，它的应用场景就是如果在侦听dom发生了改变，需要获取更新后的dom，那么就可以选择post
 
@@ -394,13 +394,13 @@ watch侦听函数的数据源有两种类型：
 
 watch函数第一个参数传入一个getter函数
 
-![image-20250725085715006](./16_composition API(2).assets/image-20250725085715006.png)
+![image-20250725085715006](./assets/16_composition API(2).assets/image-20250725085715006.png)
 
 watch函数第一个参数传入一个可响应对象（ref）
 
 这里newValue和oldValue拿到的是kobe和james，而不是响应式对象
 
-![image-20250725085720456](./16_composition API(2).assets/image-20250725085720456.png)
+![image-20250725085720456](./assets/16_composition API(2).assets/image-20250725085720456.png)
 
 watch函数第一个参数传入一个可响应对象（reactive对象）
 
@@ -428,7 +428,7 @@ watch函数第一个参数传入一个可响应对象（reactive对象）
 
 watch的源码：
 
-![image-20250725135304810](./16_composition API(2).assets/image-20250725135304810.png)
+![image-20250725135304810](./assets/16_composition API(2).assets/image-20250725135304810.png)
 
 所以可以传入Ref,react,array,function，最终都会赋值给getter
 
@@ -444,7 +444,7 @@ watch的源码：
 
 侦听器还可以使用数组同时侦听多个源：
 
-![image-20250725085730784](./16_composition API(2).assets/image-20250725085730784.png)
+![image-20250725085730784](./assets/16_composition API(2).assets/image-20250725085730784.png)
 
 这里的newValue是name和age的新的值组成的数组，oldValue是name和age的旧的值组成的数组
 
@@ -456,7 +456,7 @@ watch的源码：
 
 如果我们希望侦听一个数组或者对象，那么可以使用一个getter函数，并且对可响应对象进行解构：
 
-![image-20250725085740368](./16_composition API(2).assets/image-20250725085740368.png)
+![image-20250725085740368](./assets/16_composition API(2).assets/image-20250725085740368.png)
 
 甚至可以这样写
 
@@ -487,11 +487,11 @@ watch的源码：
 
 默认情况下watch是支持深度侦听的，因为源码是这样写的
 
-![image-20250725141034005](./16_composition API(2).assets/image-20250725141034005.png)
+![image-20250725141034005](./assets/16_composition API(2).assets/image-20250725141034005.png)
 
 但是如果是这种写法的话
 
-![image-20250725085749903](./16_composition API(2).assets/image-20250725085749903.png)
+![image-20250725085749903](./assets/16_composition API(2).assets/image-20250725085749903.png)
 
 或者这样写的话
 

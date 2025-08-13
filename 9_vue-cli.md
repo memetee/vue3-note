@@ -6,7 +6,7 @@
 - 所以在真实开发中，我们通常会使用脚手架来创建一个项目，Vue的项目我们使用的就是Vue的脚手架； 
 - 脚手架其实是建筑工程中的一个概念，在我们软件工程中也会将一些帮助我们搭建项目的工具称之为脚手架；
 
-<img src=".\9_vue-cli.assets\/image-20230813202609647.png" alt="image-20230813202609647" style="zoom:50%;" />
+<img src="./assets/9_vue-cli.assets/image-20230813202609647.png" alt="image-20230813202609647" style="zoom:50%;" />
 
 Vue的脚手架就是Vue CLI： 
 
@@ -44,13 +44,13 @@ vue create 项目的名称
 
 ## vue create 项目的过程
 
-![image-20230813202319250](.\9_vue-cli.assets\/image-20230813202319250.png)
+![image-20230813202319250](./assets/9_vue-cli.assets/image-20230813202319250.png)
 
-![image-20230813202332313](.\9_vue-cli.assets\/image-20230813202332313.png)
+![image-20230813202332313](./assets/9_vue-cli.assets/image-20230813202332313.png)
 
-![image-20230813202344595](.\9_vue-cli.assets\/image-20230813202344595.png)
+![image-20230813202344595](./assets/9_vue-cli.assets/image-20230813202344595.png)
 
-![image-20230813202355938](.\9_vue-cli.assets\/image-20230813202355938.png)
+![image-20230813202355938](./assets/9_vue-cli.assets/image-20230813202355938.png)
 
 
 

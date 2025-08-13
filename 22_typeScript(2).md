@@ -1,7 +1,3 @@
-
-
-
-
 ## 类型缩小
 
 什么是类型缩小呢？ 
@@ -21,13 +17,23 @@
 
 
 
+
+
 ## typeof
 
 在 TypeScript 中，检查返回的值typeof是一种类型保护：因为 TypeScript 对如何typeof操作不同的值进行编码。
 
-<img src="C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210723224811842.png" alt="image-20210723224811842" style="zoom:50%;" />
-
-![image-20210725102508161](C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210725102508161.png)
+```ts
+type ID = number | string
+function printId(id: ID) {
+    if (typeof id === 'string') {
+        // 类型保护
+        console.log(id.toUpperCase())
+    } else {
+        console.log(id)
+    }
+}
+```
 
 
 
@@ -37,9 +43,36 @@
 
 我们可以使用Switch或者相等的一些运算符来表达相等性（比如===, !==, ==, and != ）：
 
-![image-20210723224852618](C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210723224852618.png)
+```ts
+type Direction = 'left' | 'right' | 'center'
+function turnDirection(direction: Direction) {
+    switch(direction) {
+        case 'left':
+            console.log('调用left方法')
+            break;
+        case 'right':
+            console.log('调用right方法')
+            break;
+        case 'center':
+            console.log('调用center方法')
+            break;
+        default:
+            console.log('调用默认方法')
+    }
+}
+```
 
-![image-20210725102521520](C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210725102521520.png)
+当然也可以用if来写
+
+```ts
+if (direction === 'left') {
+    
+} else {
+    
+}
+```
+
+
 
 
 
@@ -47,33 +80,109 @@
 
 JavaScript 有一个运算符来检查一个值是否是另一个值的“实例”：
 
-![image-20210723224938324](C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210723224938324.png)
+案例一：
 
-![image-20210725102535397](C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210725102535397.png)
+```ts
+function printValue(date: Date | string) {
+    // 判断date是不是Date的实例
+    if (date instanceof Date) {
+        console.log(date.toLocaleString())
+    } else {
+        console.log(date)
+    }
+}
+```
+
+案例二：
+
+```ts
+class Student {
+    studying() {}
+}
+class Teacher {
+    teaching() {}
+}
+
+function work(p: Student | Teacher) {
+    if(p instanceof Student) {
+        p.studying()
+    } else {
+        p.teaching()
+    }
+}
+```
+
+
+
+
 
 ## in
 
 Javascript 有一个运算符，用于确定对象是否具有带名称的属性：in运算符
 
-- 如果指定的属性在指定的对象或其原型链中，则in 运算符返回true；
+- 如果指定的属性在指定的对象或其原型链中，则`in`运算符返回true；
 
-<img src="C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210723225029348.png" alt="image-20210723225029348" style="zoom:50%;" />
+```ts
+type Fish = { swim: () => void }
+type Dog = { run: () => void }
 
-![image-20210725102546036](C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210725102546036.png)
+function move(animal: Fish | Dog ) {
+    // 判断swim有没有在animal里面
+    if ('swim' in animal){
+        animal.swim()
+    } else {
+        animal.run()
+    }
+}
+```
+
+
+
+
 
 ## TypeScript函数类型
 
-在JavaScript开发中，函数是重要的组成部分，并且函数可以作为一等公民（可以作为参数，也可以作为返回值进 行传递）。 
+在JavaScript开发中，函数是重要的组成部分，并且函数可以作为一等公民（可以作为参数，也可以作为返回值进行传递）。 
 
 那么在使用函数的过程中，函数是否也可以有自己的类型呢？ 
 
 - 我们可以编写函数类型的表达式（Function Type Expressions），来表示函数类型；
 
-<img src="C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210723225113908.png" alt="image-20210723225113908" style="zoom:50%;" />
 
-![image-20210725104113767](C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210725104113767.png)
 
-![image-20210725104810714](C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210725104810714.png)
+```ts
+// 这个就是函数类型
+type CalcFunc = () => void
+type CalcFunc = (num1: number, num2: number) => void
+```
+
+
+
+案例：
+
+```ts
+// 这里可以写void的话，返回任何东西都是可以的，但是我们下面实际上应该返回的是number，会更严谨一些
+type CalcFunc = (num1: number, num2: number) => void
+
+function calc(fn: CalcFunc) {
+    console.log(fn(20, 30))
+}
+
+funciton sum(num1: number, num2: number) {
+    return num1 + num2
+}
+
+function mul(num1: number, num2: number) {
+    return num1 * num2
+}
+
+calc(sum)
+calc(mul)
+```
+
+
+
+
 
 ## TypeScript函数类型解析
 
@@ -84,7 +193,9 @@ Javascript 有一个运算符，用于确定对象是否具有带名称的属性
 
 在某些语言中，可能参数名称num1和num2是可以省略，但是TypeScript是不可以的：
 
-![image-20210723225157312](C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210723225157312.png)
+![image-20250811164615672](./assets/22_typeScript(2).assets/image-20250811164615672.png)
+
+
 
 
 
@@ -92,47 +203,65 @@ Javascript 有一个运算符，用于确定对象是否具有带名称的属性
 
 我们可以指定某个参数是可选的：
 
-<img src="C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210723225230487.png" alt="image-20210723225230487" style="zoom:50%;" />
+```ts
+function foo(x: number, y?: number) {
+    console.log(x, y)
+}
+```
 
-这个时候这个参数x依然是有类型的，它是什么类型呢？ number | undefined
+这个时候这个参数x依然是有类型的，它是什么类型呢？
 
-![image-20210723225308092](C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210723225308092.png)
+number | undefined（联合类型）
+
+![image-20250811164629803](./assets/22_typeScript(2).assets/image-20250811164629803.png)
 
 另外可选类型需要在必传参数的后面：
 
-<img src="C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210723225336827.png" alt="image-20210723225336827" style="zoom:50%;" />
+![image-20250811164635142](./assets/22_typeScript(2).assets/image-20250811164635142.png)
 
-![image-20210725111111039](C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210725111111039.png)
+
+
+
 
 ## 默认参数
 
 从ES6开始，JavaScript是支持默认参数的，TypeScript也是支持默认参数的：
 
-<img src="C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210723225415553.png" alt="image-20210723225415553" style="zoom:50%;" />
+```ts
+// 这个顺序可以不固定，但是默认值参数一般放在最后面
+function foo(x: number, y: number = 6) {
+    console.log(x, y)
+}
+foo(10)
+```
 
-这个时候y的类型其实是 undefined 和 number 类型的联合。
+这个时候y的类型其实是 undefined 和 number 的联合类型。
 
-![image-20210725111602337](C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210725111602337.png)
+
+
+
 
 ## 剩余参数
 
 从ES6开始，JavaScript也支持剩余参数，剩余参数语法允许我们将一个不定数量的参数放到一个数组中。
 
-<img src="C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210723225509746.png" alt="image-20210723225509746" style="zoom:50%;" />
+```ts
+function sum(...nums: number[]) {
+    let total = 0
+    for(const num of nums) {
+        total += num
+    }
+    return total
+}
+
+const result1 = sum(10, 20, 30)
+console.log(result1)
+
+const result2 = sum(10, 20, 30, 40)
+console.log(result2)
+```
 
 
-
-![image-20210725112724098](C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210725112724098.png)
-
-
-
-函数接收多个参数
-
-![image-20210725113758636](C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210725113758636.png)
-
-
-
-![image-20210725114328574](C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210725114328574.png)
 
 
 
@@ -144,7 +273,15 @@ this是JavaScript中一个比较难以理解和把握的知识点：
 
 那么，TypeScript是如何处理this呢？我们先来看一个例子：
 
-<img src="C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210723225703644.png" alt="image-20210723225703644" style="zoom:50%;" />
+```ts
+const info = {
+    name: 'wts',
+    sayHello() {
+        console.log(this.name)
+    }
+}
+info.sayHello()
+```
 
 上面的代码是可以正常运行的，也就是TypeScript在编译时，认为我们的this是可以正确去使用的： 
 
@@ -156,11 +293,22 @@ this是JavaScript中一个比较难以理解和把握的知识点：
 
 
 
+
+
 ## 不确定的this类型
 
 但是对于某些情况来说，我们并不知道this到底是什么？
 
-<img src="C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210723225751177.png" alt="image-20210723225751177" style="zoom:50%;" />
+```ts
+function sayHello () {
+    console.log(this.name)
+}
+const info = {
+    name: 'wts',
+    sayHello
+}
+info.sayHello()
+```
 
 这段代码运行会报错的： 
 
@@ -170,13 +318,27 @@ this是JavaScript中一个比较难以理解和把握的知识点：
 
 
 
+
+
 ## 指定this的类型
 
 这个时候，通常TypeScript会要求我们明确的指定this的类型：
 
-<img src="C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210723225932560.png" alt="image-20210723225932560" style="zoom:50%;" />
+```ts
+type NameType = {
+    name: string
+}
+
+function sayHello(this: NameType) {
+    console.log(this.name)
+}
+```
 
 ![image-20210725121453645](C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210725121453645.png)
+
+
+
+
 
 ## 函数的重载
 
@@ -184,12 +346,14 @@ this是JavaScript中一个比较难以理解和把握的知识点：
 
 我们可能会这样来编写，但是其实是错误的：
 
-<img src="C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210723230016348.png" alt="image-20210723230016348" style="zoom:50%;" />
+![image-20250811164714025](./assets/22_typeScript(2).assets/image-20250811164714025.png)
 
 那么这个代码应该如何去编写呢？ 
 
 - 在TypeScript中，我们可以去编写不同的重载签名（overload signatures）来表示函数可以以不同的方式进行 调用； 
 - 一般是编写两个或者以上的重载签名，再去编写一个通用的函数以及实现；
+
+
 
 
 
@@ -199,11 +363,24 @@ this是JavaScript中一个比较难以理解和把握的知识点：
 
 - 在我们调用sum的时候，它会根据我们传入的参数类型来决定执行函数体时，到底执行哪一个函数的重载签名；
 
-<img src="C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210723230127933.png" alt="image-20210723230127933" style="zoom:50%;" />
+```ts
+function sum(a1: number, a2: number): number;
+function sum(a1: string, a2: string): string;
+function sum(a1: any, a2: any): any {
+    return a1 + a2
+}
+
+console.log(sum(20, 30))
+console.log(sum('aaa', 'bbb'))
+```
 
 但是注意，有实现提的函数，是不能直接被调用的：
 
-<img src="C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210723230151669.png" alt="image-20210723230151669" style="zoom:50%;" />
+```ts
+sum({name: 'wts'}, {age: 18})
+```
+
+
 
 
 
@@ -213,12 +390,27 @@ this是JavaScript中一个比较难以理解和把握的知识点：
 
 这里有两种实现方案： 
 
-- 方案一：使用联合类型来实现； 
+- 方案一：使用联合类型来实现；
+
+```ts 
+function getLength(a: string | any[]) {
+    return a.length
+}
+```
+
 - 方案二：实现函数重载来实现；
 
-<img src="C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210723230235353.png" alt="image-20210723230235353" style="zoom:50%;" />
+```ts
+function getLength(a: string): number;
+function getLength(a: any[]): number;
+function getLength(a: any) {
+    return a.length
+}
+```
 
-<img src="C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210723230257888.png" alt="image-20210723230257888" style="zoom:50%;" />
+
+
+
 
 在开发中我们选择使用哪一种呢？ 
 
@@ -258,6 +450,8 @@ TypeScript作为JavaScript的超集，也是支持使用class关键字的，并�
 
 
 
+
+
 ## 类的定义
 
 我们来定义一个Person类： 
@@ -277,7 +471,28 @@ TypeScript作为JavaScript的超集，也是支持使用class关键字的，并�
 
 类中可以有自己的函数，定义的函数称之为方法；
 
-![image-20210725180016724](C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210725180016724.png)
+```ts
+class Person {
+    name!: string
+    age: number
+    constructor(name: string, age: number) {
+        // this.name = name
+        this.age = age
+    }
+    
+    running() {
+        console.log(this.name + ' running')
+    }
+    
+    eating() {
+        console.log(this.name + ' eating')
+    }
+}
+```
+
+
+
+
 
 ## 类的继承
 
@@ -290,9 +505,27 @@ TypeScript作为JavaScript的超集，也是支持使用class关键字的，并�
 - Student类可以有自己的属性和方法，并且会继承Person的属性和方法； 
 - 在构造函数中，我们可以通过super来调用父类的构造方法，对父类中的属性进行初始化；
 
-<img src="C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210725133013485.png" alt="image-20210725133013485" style="zoom:50%;" />
+```ts
+class Student extends Person {
+    sno: number
+    constructor(name: string, age: number, sno: number) {
+        super(name, age)
+        this.sno = sno
+    }
+    studying() {
+        console.log(this.name + ' studying')
+    }
+    eating() {
+        console.log('student eating')
+    }
+    running() {
+        super.running();
+        console.log('student running')
+    }
+}
+```
 
-<img src="C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210725133028113.png" alt="image-20210725133028113" style="zoom:50%;" />
+
 
 
 
@@ -318,19 +551,53 @@ TypeScript作为JavaScript的超集，也是支持使用class关键字的，并�
 
 
 
+
+
 ## 类的成员修饰符
 
 在TypeScript中，类的属性和方法支持三种修饰符： public、private、protected 
 
 - public 修饰的是在任何地方可见、公有的属性或方法，默认编写的属性就是public的； 
-- private 修饰的是仅在同一类中可见、私有的属性或方法； 
+- private 修饰的是仅在同一类中可见、私有的属性或方法；
 - protected 修饰的是仅在类自身及子类中可见、受保护的属性或方法；
 
 public是默认的修饰符，也是可以直接访问的，我们这里来演示一下protected和private。
 
-<img src="C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210725133124492.png" alt="image-20210725133124492" style="zoom:50%;" />
+```ts
+class Person {
+    protected name: string
+    constructor(name: string) {
+        this.name = name;
+    }
+}
 
-<img src="C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210725133135493.png" alt="image-20210725133135493" style="zoom:50%;" />
+class Student extends Person {
+    constructor(name: string) {
+        super(name)
+    }
+    running() {
+        console.log(this.name + ' running')
+    }
+}
+```
+
+
+
+```ts
+class Person {
+    private name: string
+    
+    constructor(name: string) {
+        this.name = name
+    }
+}
+
+const p = new Person('wts')
+// Property 'name' is private and only accessible within
+// console.log(p.name)
+```
+
+
 
 <img src="C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210725210553103.png" alt="image-20210725210553103" style="zoom:50%;" />
 
@@ -342,25 +609,67 @@ public是默认的修饰符，也是可以直接访问的，我们这里来演�
 
 
 
+
+
 ## 只读属性readonly
 
 如果有一个属性我们不希望外界可以任意的修改，只希望确定值后直接使用，那么可以使用readonly：
 
-<img src="C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210725133202694.png" alt="image-20210725133202694" style="zoom:50%;" />
+```ts
+class Person {
+    readonly name: string
+    constructor(name: string) {
+        this.name = name
+    }
+}
+
+const p = new Person('wts')
+console.log(p.name)
+// Cannot assign to 'name' because it is a read-only property.
+// p.name = 'coderwts'
+
+export {}
+```
+
+
 
 ![image-20210725213505626](C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210725213505626.png)
+
+
+
+
 
 ## getters/setters
 
 在前面一些私有属性我们是不能直接访问的，或者某些属性我们想要监听它的获取(getter)和设置(setter)的过程， 这个时候我们可以使用存取器。
 
-<img src="C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210725133234501.png" alt="image-20210725133234501" style="zoom:50%;" />
+```ts
+class Person {
+    private _name: string
+    
+    set name(newName) {
+        this._name = newName
+    }
+    get name() {
+        return this._name
+    }
+    constructor(name: string) {
+        this.name = name
+    }
+}
 
-<img src="C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210725133248130.png" alt="image-20210725133248130" style="zoom:50%;" />
+const p = new Person('wts')
+p.name = 'coderWts'
+console.log(p.name)
+```
 
 
 
 <img src="C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210725215018727.png" alt="image-20210725215018727" style="zoom: 50%;" />
+
+
+
+
 
 ## 静态成员
 
@@ -368,9 +677,24 @@ public是默认的修饰符，也是可以直接访问的，我们这里来演�
 
 在TypeScript中通过关键字static来定义：
 
-<img src="C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210725133315940.png" alt="image-20210725133315940" style="zoom:50%;" />
+```ts
+class Student {
+    static time: string = '20:00'
+    
+    static attendClass() {
+        console.log('去上课')
+    }
+}
+
+console.log(Student.time)
+Student.attendClass()
+```
 
 ![image-20210725215448627](C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210725215448627.png)
+
+
+
+
 
 ## 抽象类abstract
 
@@ -391,15 +715,52 @@ public是默认的修饰符，也是可以直接访问的，我们这里来演�
 
 
 
+
+
 ## 抽象类演练
 
-<img src="C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210725133715763.png" alt="image-20210725133715763" style="zoom:50%;" />
+```ts
+abstract class Shape {
+	abstract getArea(): number
+}
 
-<img src="C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210725133738156.png" alt="image-20210725133738156" style="zoom:50%;" />
+class Circle extends Shape {
+    private r: number
+    constructor(r: number) {
+        super()
+        this.r = r
+    }
+    
+    getArea() {
+        return this.r * this.r * 3.14
+    }
+}
+
+class Rectangle extends Shape {
+    private width: number
+    private height: number
+    
+    constructor(width: number, height: number) {
+        super()
+        this.width = width
+        this.height = height
+    } 
+    getArea() {
+        return this.width * this.height
+    }
+}
+
+const circle = new Circle(10)
+const rectangle = new Rectangle(20, 30)
+
+function calcArea(shape: Shape) {
+    console.log(shape.getArea())
+}
+calcArea(circle)
+calcArea(rectangle)
+```
 
 
-
-<img src="C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210725133753422.png" alt="image-20210725133753422" style="zoom:50%;" />
 
 
 
@@ -453,8 +814,6 @@ console.log(makeArea(circle))
 
 // makeArea(123)
 // makeArea("123")
-
-
 ```
 
 ![image-20210725224129840](C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210725224129840.png)
@@ -467,7 +826,24 @@ console.log(makeArea(circle))
 
 类本身也是可以作为一种数据类型的：
 
-<img src="C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210725133823450.png" alt="image-20210725133823450" style="zoom:50%;" />
+```ts
+class Person {
+    name: string;
+    constructor(name: string) {
+        this.name = name;
+    }
+    running() {
+        console.log(this.name + ' running');
+    }
+}
+const p1: Person = new Person('wts')
+const p2: Person = {
+    name: 'kobe',
+    running: function () {
+        console.log(this.name + ' running')
+    }
+}
+```
 
 
 
@@ -479,11 +855,23 @@ console.log(makeArea(circle))
 
 在前面我们通过type可以用来声明一个对象类型：
 
-<img src="C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210725133907676.png" alt="image-20210725133907676" style="zoom:50%;" />
+```ts
+type Point = {
+    x: number
+    y: number
+}
+```
+
+
 
 对象的另外一种声明方式就是通过接口来声明：
 
-<img src="C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210725133926401.png" alt="image-20210725133926401" style="zoom:50%;" />
+```ts
+interface Point {
+    x: number
+    y: number
+}
+```
 
 他们在使用上的区别，我们后续再来说明。 
 
@@ -495,7 +883,26 @@ console.log(makeArea(circle))
 
 接口中我们也可以定义可选属性：
 
-<img src="C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210725134449769.png" alt="image-20210725134449769" style="zoom:50%;" />
+```ts
+interface Person {
+    name: string
+    age?: number
+    friend?: {
+        name: string
+    }
+}
+const person: Person = {
+    name: 'wts',
+    age: 18,
+    friend: {
+        name: 'kobe'
+    }
+}
+console.log(person.name)
+console.log(person.friend?.name)
+```
+
+
 
 
 
@@ -505,9 +912,32 @@ console.log(makeArea(circle))
 
 - 这样就意味着我们再初始化之后，这个值是不可以被修改的；
 
-<img src="C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210725134545299.png" alt="image-20210725134545299" style="zoom:50%;" />
+```ts
+interface Person {
+    readonly name: string
+    age?: number
+    readonly friend?: {
+        name: string
+    }
+}
 
-<img src="C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210725134638923.png" alt="image-20210725134638923" style="zoom:50%;" />
+const person: Person = {
+    name: 'wts',
+    age: 18,
+    friend: {
+        name: 'kobe'
+    }
+}
+
+// person.name = 'coderwts' // 不可以设置
+// person.friend = {} // 不可以设置
+// 下面的代码是可以执行的
+if (person.friend) {
+    person.friend.name = '123'
+}
+```
+
+
 
 
 
@@ -515,9 +945,26 @@ console.log(makeArea(circle))
 
 前面我们使用interface来定义对象类型，这个时候其中的属性名、类型、方法都是确定的，但是有时候我们会遇 到类似下面的对象：
 
-<img src="C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210725134706225.png" alt="image-20210725134706225" style="zoom:50%;" />
+```ts
+interface FrontLanguage {
+    [index: number]: string
+}
+const frontend: FrontLanguage = {
+    1: 'HTML',
+    2: 'CSS',
+    3: 'JavaScript'
+}
 
-<img src="C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210725134718105.png" alt="image-20210725134718105" style="zoom:50%;" />
+interface LanguageBirth {
+    [name: string]: number
+    Java: number
+}
+const language: LanguageBirth = {
+    'Java': 1995,
+    'JavaScript': 1996,
+    'C': 1972
+}
+```
 
 <img src="C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210725230509636.png" alt="image-20210725230509636" style="zoom:50%;" />
 
@@ -529,13 +976,41 @@ console.log(makeArea(circle))
 
 前面我们都是通过interface来定义对象中普通的属性和方法的，实际上它也可以用来定义函数类型：
 
-<img src="C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210725134747897.png" alt="image-20210725134747897" style="zoom:50%;" />
+```ts
+interface CalcFunc {
+    (num1: number, num2: number): number
+}
+
+const add: 
+```
+
+
+
+```ts
+interface CalcFunc {
+    (num1: number, num2: number): number
+}
+
+const add: CalcFunc = (num1, num2) => {
+    return num1 + num2
+}
+
+const sub: CalcFunc = (num1, num2) => {
+    return num1 - num2
+}
+```
 
 当然，除非特别的情况，还是推荐大家使用类型别名来定义函数：
 
-![image-20210725134807400](C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210725134807400.png)
+```ts
+type CalcFunc = (num1: number, num2: number) => number
+```
 
 ![image-20210725231404101](C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210725231404101.png)
+
+
+
+
 
 ## 接口继承
 
@@ -543,11 +1018,31 @@ console.log(makeArea(circle))
 
 - 并且我们会发现，接口是支持多继承的（类不支持多继承）
 
-<img src="C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210725134836079.png" alt="image-20210725134836079" style="zoom:50%;" />
+```ts
+interface Person {
+    name: string
+    eating: () => void
+}
 
-<img src="C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210725134847643.png" alt="image-20210725134847643" style="zoom:50%;" />
+interface Animal {
+    running: () => void
+}
+
+interface Student extends Person, Animal {
+    sno: number
+}
+
+const stu: Student = {
+    sno: 110,
+    name: 'wts',
+    eating: function () {},
+    running: function () {}
+}
+```
 
 <img src="C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210725232400420.png" alt="image-20210725232400420" style="zoom:50%;" />
+
+
 
 
 
@@ -558,13 +1053,34 @@ console.log(makeArea(circle))
 - 如果被一个类实现，那么在之后需要传入接口的地方，都可以将这个类传入； 
 - 这就是面向接口开发；
 
-<img src="C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210725134926604.png" alt="image-20210725134926604" style="zoom: 50%;" />
+```ts
+interface ISwim {
+    swimming: () => void
+}
 
-<img src="C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210725134945761.png" alt="image-20210725134945761" style="zoom:50%;" />
+interface IRun {
+    running: () => void
+}
 
-<img src="C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210726205556865.png" alt="image-20210726205556865" style="zoom:50%;" />
+class Person implements ISwim, IRun {
+    swimming() {
+        console.log('swimming')
+    }
+    running() {
+        
+    }
+}
 
-<img src="C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210726205629325.png" alt="image-20210726205629325" style="zoom:50%;" />
+function swim(swimmer: ISwim) {
+    swimmer.swimming()
+}
+const p = new Person()
+swim(p)
+```
+
+
+
+
 
 ## **交叉类型**
 
@@ -572,7 +1088,9 @@ console.log(makeArea(circle))
 
 - 联合类型表示多个类型中一个即可
 
-![image-20210725135020139](C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210725135020139.png)
+```ts
+type Alignment = 'left' | 'right' | 'center'
+```
 
 还有另外一种类型合并，就是交叉类型（Intersection Types）： 
 
@@ -584,7 +1102,9 @@ console.log(makeArea(circle))
 - 表达的含义是number和string要同时满足； 
 - 但是有同时满足是一个number又是一个string的值吗？其实是没有的，所以MyType其实是一个never类型；
 
-<img src="C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210725135059987.png" alt="image-20210725135059987" style="zoom:50%;" />
+```ts
+type MyType = number & string
+```
 
 
 
@@ -594,9 +1114,26 @@ console.log(makeArea(circle))
 
 所以，在开发中，我们进行交叉时，通常是对对象类型进行交叉的：
 
-<img src="C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210725135128689.png" alt="image-20210725135128689" style="zoom:50%;" />
+```ts
+interface Colorful {
+    color: string
+}
 
-<img src="C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210725233110935.png" alt="image-20210725233110935" style="zoom:50%;" />
+interface IRun {
+    running: () => void
+}
+
+type NewType = Colorful & IRun
+
+const obj: NewType = {
+    color: 'red',
+    running: function () {
+        
+    }
+}
+```
+
+
 
 
 
@@ -611,17 +1148,28 @@ console.log(makeArea(circle))
 - interface 可以重复的对某个接口来定义属性和方法； 
 - 而type定义的是别名，别名是不能重复的；
 
-<img src="C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210725135220533.png" alt="image-20210725135220533" style="zoom:50%;" />
+```ts
+interface IPerson {
+    name: string
+    running: () => void
+}
 
-<img src="C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210725135242421.png" alt="image-20210725135242421" style="zoom:50%;" />
+interface IPerson {
+    age:number
+}
+
+type Person = {
+    name: string
+    running: () => void
+}
+
+// error:Duplicate identifier 'Person'.ts(2300)
+type Person = {
+    age: number
+}
+```
 
 
-
-![image-20210726210603492](C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210726210603492.png)
-
-<img src="C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210726211144468.png" alt="image-20210726211144468" style="zoom:50%;" />
-
-![image-20210726211449038](C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210726211449038.png)
 
 
 
@@ -629,9 +1177,38 @@ console.log(makeArea(circle))
 
 我们来看下面的代码：
 
-<img src="C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210725135320715.png" alt="image-20210725135320715" style="zoom:50%;" />
+```ts
+interface IPerson {
+    name: string
+    eating: () => void
+}
 
-<img src="C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210725135332831.png" alt="image-20210725135332831" style="zoom:50%;" />
+// Object literal may only specify known properties, and 'age' does not exist
+const p: IPerson = {
+    name:'wts',
+    age:18,
+    eating: function () {}
+}
+```
+
+
+
+```ts
+interface IPerson {
+    name: string
+    eating: () => void
+}
+
+const obj = {
+    name: 'wts',
+    age: 18,
+    eating: function () {}
+}
+
+const p: IPerson = obj
+```
+
+
 
 这是因为TypeScript在字面量直接赋值的过程中，为了进行类型推导会进行严格的类型限制。 
 
@@ -652,9 +1229,35 @@ console.log(makeArea(circle))
 - 枚举其实就是将一组可能出现的值，一个个列举出来，定义在一个类型中，这个类型就是枚举类型； 
 - 枚举允许开发者定义一组命名常量，常量可以是数字、字符串类型；
 
-<img src="C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210725140009393.png" alt="image-20210725140009393" style="zoom:50%;" />
+```ts
+enum Direction {
+    LEFT,
+    RIGHT,
+    TOP,
+    BOTTOM
+}
 
-<img src="C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210725140029949.png" alt="image-20210725140029949" style="zoom:50%;" />
+function turnDirection(direction: Direction) {
+    switch(direction) {
+        case Direction.LEFT:
+            console.log('转向左边~')
+            break;
+        case Direction.right:
+            console.log('转向右边~')
+            break;
+        case Direction.TOP:
+            console.log('转向上边~')
+            break;
+        case Direction.BOTTOM:
+            console.log('转向下边~')
+            break;
+        default:
+            const myDirection: never = direction
+    }
+}
+```
+
+
 
 <img src="C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210726221737061.png" alt="image-20210726221737061" style="zoom:50%;" />
 
@@ -668,15 +1271,40 @@ console.log(makeArea(circle))
 
 我们也可以给他们赋值其他的类型：
 
-<img src="C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210725140129925.png" alt="image-20210725140129925" style="zoom:50%;" />
+```ts
+enum Direction {
+    LEFT = 0,
+    RIGHT = 1,
+    TOP = 2,
+    BOTTOM = 3
+}
+```
 
-<img src="C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210725140140044.png" alt="image-20210725140140044" style="zoom:50%;" />
 
-<img src="C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210725140151768.png" alt="image-20210725140151768" style="zoom:50%;" />
 
-<img src="C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210726222016141.png" alt="image-20210726222016141" style="zoom:50%;" />
+```ts
+enum Direction {
+    LEFT = 100,
+    RIGHT,
+    TOP,
+    BOTTOM
+}
+```
 
-<img src="C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210726222029773.png" alt="image-20210726222029773" style="zoom:50%;" />
+
+
+```ts
+enum Direction {
+    LEFT,
+    RIGHT,
+    TOP = 'TOP',
+    BOTTOM = 'BOTTOM'
+}
+```
+
+
+
+
 
 ## 认识泛型
 
@@ -691,11 +1319,21 @@ console.log(makeArea(circle))
 
 如果我们是TypeScript的思维方式，要考虑这个参数和返回值的类型需要一致：
 
-<img src="C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210725140258783.png" alt="image-20210725140258783" style="zoom:50%;" />
+```ts
+function foo(arg: number): number {
+    return arg
+}
+```
 
 上面的代码虽然实现了，但是不适用于其他类型，比如string、boolean、Person等类型：
 
-<img src="C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210725140321363.png" alt="image-20210725140321363" style="zoom:50%;" />
+```ts
+function foo(arg: any): any {
+    return arg
+}
+```
+
+
 
 
 
@@ -708,7 +1346,13 @@ console.log(makeArea(circle))
 
 我们需要在这里使用一种特性的变量 - 类型变量（type variable），它作用于类型，而不是值：
 
-<img src="C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210725140403523.png" alt="image-20210725140403523" style="zoom:50%;" />
+```ts
+function foo<Type>(arg: Type): Type {
+    return arg
+}
+```
+
+
 
 这里我们可以使用两种方式来调用它： 
 
@@ -716,21 +1360,32 @@ console.log(makeArea(circle))
 - 方式二：通过类型推到，自动推到出我们传入变量的类型：
   - 在这里会推导出它们是 字面量类型的，因为字面量类型对于我们的函数也是适用的
 
-<img src="C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210725140439638.png" alt="image-20210725140439638" style="zoom:50%;" />
+```ts
+function foo<Type>(arg: Type): Type {
+    return arg
+}
+foo<string>('abc')
+foo<number>(123)
 
-<img src="C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210725140453577.png" alt="image-20210725140453577" style="zoom:50%;" />
+foo('abc')
+foo(123)
+```
 
-<img src="C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210727221404339.png" alt="image-20210727221404339" style="zoom:50%;" />
 
 
 
-<img src="C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210727222049635.png" alt="image-20210727222049635" style="zoom:50%;" />
 
 ## 泛型的基本补充
 
 当然我们也可以传入多个类型：
 
-<img src="C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210725140522458.png" alt="image-20210725140522458" style="zoom:50%;" />
+```ts
+function foo<T, E>(a1: T, a2: E) {
+
+}
+```
+
+
 
 平时在开发中我们可能会看到一些常用的名称： 
 
@@ -745,11 +1400,33 @@ console.log(makeArea(circle))
 
 在定义接口的时候我们也可以使用泛型：
 
-<img src="C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210725140617278.png" alt="image-20210725140617278" style="zoom:50%;" />
+```ts
+interface IFoo<T> {
+    initialValue: T,
+    valueList: T[],
+    handleValue: (value: T) => void
+}
 
-<img src="C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210725140634706.png" alt="image-20210725140634706" style="zoom:50%;" />
+const foo: IFoo<number> = {
+    initialValue: 0,
+    valueList: [0, 1, 3],
+    handleValue: function (value: number) {
+        console.log(value)
+    }
+}
+```
 
-<img src="C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210727222550453.png" alt="image-20210727222550453" style="zoom:50%;" />
+
+
+```ts
+interface IFoo<T = number> {
+    initialValue: T,
+    valueList: T[],
+    handleValue: (value: T) => void
+}
+```
+
+
 
 
 
@@ -757,9 +1434,24 @@ console.log(makeArea(circle))
 
 我们也可以编写一个泛型类：
 
-<img src="C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210725140702253.png" alt="image-20210725140702253" style="zoom:50%;" />
+```ts
+class Point<T> {
+    x: T
+    y: T
+    
+    constructor(x: T, y: T) {
+        this.x = x
+        this.y = y
+    }
+}
+const p1 = new Point(10, 20)
+const p2 = new Point<number>(10, 20)
+const p3: Point<number> = new Point(10, 20)
+```
 
-<img src="C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210727223135853.png" alt="image-20210727223135853" style="zoom:50%;" />
+
+
+
 
 ## 泛型约束
 
@@ -768,9 +1460,23 @@ console.log(makeArea(circle))
 - 比如string和array都是有length的，或者某些对象也是会有length属性的； 
 - 那么只要是拥有length的属性都可以作为我们的参数类型，那么应该如何操作呢？
 
-<img src="C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210725140741456.png" alt="image-20210725140741456" style="zoom:50%;" />
+```ts
+interface ILength {
+    length: number
+}
 
-<img src="C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210727223642085.png" alt="image-20210727223642085" style="zoom:50%;" />
+function getLength<T extends ILength>(args: T) {
+    return args.length
+}
+
+console.log(getLength('abc'))
+console.log(getLength(['abc', 'cba']))
+console.log(getLength({length: 100, name: 'wts'}))
+```
+
+
+
+
 
 ## 模块化开发
 
@@ -779,7 +1485,15 @@ TypeScript支持两种方式来控制我们的作用域：
 - 模块化：每个文件可以是一个独立的模块，支持ES Module，也支持CommonJS； 
 - 命名空间：通过namespace来声明一个命名空间
 
-<img src="C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210725140816485.png" alt="image-20210725140816485" style="zoom:50%;" />
+```ts
+export function add(num1: number, num2: number) {
+    return num1 + num2
+}
+
+export function sub(num1: number, num2: number) {
+    return num1 - num2
+}
+```
 
 
 
@@ -789,7 +1503,21 @@ TypeScript支持两种方式来控制我们的作用域：
 
 命名空间在TypeScript早期时，称之为内部模块，主要目的是将一个模块内部再进行作用域的划分，防止一些命名 冲突的问题。
 
-<img src="C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210725140842788.png" alt="image-20210725140842788" style="zoom:50%;" />
+```ts
+export namespace Time {
+    export function format(time: string) {
+        return '2022-02-22'
+    }
+}
+
+export namespace Price {
+    export function format(price: number) {
+        return '222.22'
+    }
+}
+```
+
+
 
 <img src="C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210727230226008.png" alt="image-20210727230226008" style="zoom:50%;" />
 
@@ -807,7 +1535,9 @@ TypeScript支持两种方式来控制我们的作用域：
 
 之前我们所有的typescript中的类型，几乎都是我们自己编写的，但是我们也有用到一些其他的类型：
 
-![image-20210725140923893](C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210725140923893.png)
+```ts
+const imageEl = document.getElementById('image') as HTMLImageElement
+```
 
 大家是否会奇怪，我们的HTMLImageElement类型来自哪里呢？甚至是document为什么可以有getElementById的方 法呢？ 
 
@@ -945,9 +1675,41 @@ axios在这里声明的
 
 ## 声明变量-函数-类
 
-<img src="C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210725141208769.png" alt="image-20210725141208769" style="zoom:50%;" />
+```ts
+let wName = 'coderwts'
+let wAge = 18
+let wHeight = 1.88
 
-<img src="C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210725141221240.png" alt="image-20210725141221240" style="zoom:50%;" />
+function wFoo() {
+    console.log('wFoo')
+}
+function wBar() {
+    console.log('wBar')
+}
+function Person(name, age) {
+    this.name = name
+    this.age = age
+}
+```
+
+
+
+```ts
+declare let wName: string;
+declare let wAge: number;
+declare let wHeight: number;
+
+declare function wFoo(): void
+declare function wBar(): void
+declare class Person {
+    name: string
+    age: number
+    
+    constructor(name: string, age: number) {}
+}
+```
+
+
 
 
 
@@ -955,7 +1717,11 @@ axios在这里声明的
 
 我们也可以声明模块，比如lodash模块默认不能使用的情况，可以自己来声明这个模块：
 
-<img src="C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210725141256386.png" alt="image-20210725141256386" style="zoom:50%;" />
+```ts
+declare module 'lodash' {
+    export function join(args: any[]): any
+}
+```
 
 声明模块的语法: declare module '模块名' {}。 
 
@@ -970,7 +1736,19 @@ axios在这里声明的
 - 比如在开发vue的过程中，默认是不识别我们的.vue文件的，那么我们就需要对其进行文件的声明； 
 - 比如在开发中我们使用了 jpg 这类图片文件，默认typescript也是不支持的，也需要对其进行声明；
 
-<img src="C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210725141343547.png" alt="image-20210725141343547" style="zoom:50%;" />
+```ts
+declare module '*.vue' {
+    import { DefineComponent } from 'vue'
+    const component: DefineComponent
+    
+    export default component
+}
+
+declare module '*.jpg' {
+    const src: string
+    export default src
+}
+```
 
 
 
@@ -984,13 +1762,24 @@ axios在这里声明的
 
 我们可以进行命名空间的声明：
 
-<img src="C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210725141425275.png" alt="image-20210725141425275" style="zoom:50%;" />
-
-
+```ts
+declare namespace $ {
+    function ajax(settings: any): void
+}
+```
 
 在main.ts中就可以使用了：
 
-<img src="C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210725141447400.png" alt="image-20210725141447400" style="zoom:50%;" />
+```ts
+$.ajax({
+    url: 'http://123.207.32.32:8000/home/multidata',
+    success: (res: any) => {
+        console.log(res)
+    }
+})
+```
+
+
 
 
 
@@ -1002,10 +1791,10 @@ tsconfig.json是用于配置TypeScript编译时的配置选项：
 
 我们这里讲解几个比较常见的：
 
-<img src="C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210725141532093.png" alt="image-20210725141532093" style="zoom:50%;" />
+![image-20250811165501110](./assets/22_typeScript(2).assets/image-20250811165501110.png)
 
 
 
 ## tsconfig.json文件
 
-<img src="C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210725141559379.png" alt="image-20210725141559379" style="zoom: 50%;" />
+![image-20250811165508001](./assets/22_typeScript(2).assets/image-20250811165508001.png)

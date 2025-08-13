@@ -72,7 +72,7 @@ document.body.appendChild(component());
 
 打包完以后会报错
 
-![image-20230810225843834](.\7_webpack打包其他资源.assets/image-20230810225843834.png)
+![image-20230810225843834](./assets/7_webpack打包其他资源.assets/image-20230810225843834.png)
 
 
 
@@ -356,7 +356,7 @@ webpack5推荐我们使用asset module type的方式打包资源
 
 首先，我从阿里图标库中下载了几个字体图标：
 
-![image-20230811234512054](.\7_webpack打包其他资源.assets/image-20230811234512054.png)
+![image-20230811234512054](./assets/7_webpack打包其他资源.assets/image-20230811234512054.png)
 
 在component中引入，并且添加一个i元素用于显示字体图标：
 
@@ -413,7 +413,7 @@ Webpack的另一个核心是Plugin，官方有这样一段对Plugin的描述：
 - Loader是用于特定的模块类型进行转换； 
 - Plugin可以用于执行更加广泛的任务，比如打包优化、资源管理、环境变量注入等；
 
-![image-20230811235513560](.\7_webpack打包其他资源.assets/image-20230811235513560.png)
+![image-20230811235513560](./assets/7_webpack打包其他资源.assets/image-20230811235513560.png)
 
 
 
@@ -528,7 +528,7 @@ npm run build
 
 但是还有个问题，就是js文件也应该有个单独的文件夹，但是我们现在是这个样子
 
-![image-20230805233047841](.\7_webpack打包其他资源.assets/image-20230805233047841.png)
+![image-20230805233047841](./assets/7_webpack打包其他资源.assets/image-20230805233047841.png)
 
 所以我们想配置一下配置
 
@@ -550,7 +550,7 @@ module.exports = {
 
 先看一下vue打包出来的html
 
-![image-20230805233754854](.\7_webpack打包其他资源.assets/image-20230805233754854.png)
+![image-20230805233754854](./assets/7_webpack打包其他资源.assets/image-20230805233754854.png)
 
 这里面的html比我们打包的文件多，这是为什么呢？这是因为它在打包的时候指定了一个模板
 
@@ -724,7 +724,7 @@ plugins: [
 
 一般在开发中这个图标是浏览器tab的一个图标。这个图标在./public这个文件中，所以我们添加一个文件, ./public/favicon.ico
 
-![image-20230805235716165](.\7_webpack打包其他资源.assets/image-20230805235716165.png)
+![image-20230805235716165](./assets/7_webpack打包其他资源.assets/image-20230805235716165.png)
 
 这个图标是在页面的table上面的，在vue-cli中他是放到public中的
 
@@ -799,7 +799,7 @@ plugins: [
 
 打包后的打包文件
 
-![image-20230806000108508](.\7_webpack打包其他资源.assets/image-20230806000108508.png)
+![image-20230806000108508](./assets/7_webpack打包其他资源.assets/image-20230806000108508.png)
 
 
 
@@ -835,11 +835,11 @@ document.body.appendChild(component());
 
 打包以后，运行打包后的html,就会发现
 
-![image-20230812111144385](.\7_webpack打包其他资源.assets/image-20230812111144385.png)
+![image-20230812111144385](./assets/7_webpack打包其他资源.assets/image-20230812111144385.png)
 
 点开下面的bundle.js:1:13887
 
-![image-20230812111231777](.\7_webpack打包其他资源.assets/image-20230812111231777.png)
+![image-20230812111231777](./assets/7_webpack打包其他资源.assets/image-20230812111231777.png)
 
 点开了以后发现是这里，但是这里并不是和我们的代码是一样的，如果我希望点开报错以后，错误信息能在我的源代码中显示出来
 
@@ -870,7 +870,7 @@ module.exports = {
 
 development是开发模式，打包过后的代码就是这样，他没有压缩了
 
-![image-20230812123946852](.\7_webpack打包其他资源.assets/image-20230812123946852.png)
+![image-20230812123946852](./assets/7_webpack打包其他资源.assets/image-20230812123946852.png)
 
 发现里面都是一些eval函数，里面都是字符串，因为默认有一个配置（见下面）,而且这里面的代码就是没有压缩的代码，这里面是字符串，它是通过eval函数运行
 
@@ -912,19 +912,19 @@ module.exports = {
 
 ./build/js/bundle.js
 
-![image-20230812124626450](.\7_webpack打包其他资源.assets/image-20230812124626450.png)
+![image-20230812124626450](./assets/7_webpack打包其他资源.assets/image-20230812124626450.png)
 
 
 
 ./build/js/bundle.js.map
 
-![image-20230812124642989](.\7_webpack打包其他资源.assets/image-20230812124642989.png)
+![image-20230812124642989](./assets/7_webpack打包其他资源.assets/image-20230812124642989.png)
 
 
 
 再打开我们的报错就会发现可以方便的找到我们的文件
 
-![image-20230812124538219](.\7_webpack打包其他资源.assets/image-20230812124538219.png)
+![image-20230812124538219](./assets/7_webpack打包其他资源.assets/image-20230812124538219.png)
 
 这里其实可以设置非常多的值，这里设置成`source-map`就行了
 
@@ -946,7 +946,7 @@ Mode配置选项，可以告知webpack使用响应模式的内置优化：
 
 开发阶段会设置为development,生产阶段会设置为production
 
-![image-20230806101835782](.\7_webpack打包其他资源.assets/image-20230806101835782.png)
+![image-20230806101835782](./assets/7_webpack打包其他资源.assets/image-20230806101835782.png)
 
 
 
@@ -956,11 +956,11 @@ Mode配置选项，可以告知webpack使用响应模式的内置优化：
 
 devtoo，默认是eval
 
-![image-20230806101851614](.\7_webpack打包其他资源.assets/image-20230806101851614.png)
+![image-20230806101851614](./assets/7_webpack打包其他资源.assets/image-20230806101851614.png)
 
 
 
-![image-20230806101903179](.\7_webpack打包其他资源.assets/image-20230806101903179.png)
+![image-20230806101903179](./assets/7_webpack打包其他资源.assets/image-20230806101903179.png)
 
 
 
