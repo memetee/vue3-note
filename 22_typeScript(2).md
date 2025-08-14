@@ -735,29 +735,48 @@ export {}
 
 
 
+
+
 ## 只读属性readonly
 
 如果有一个属性我们不希望外界可以任意的修改，只希望确定值后直接使用，那么可以使用readonly：
 
+只读属性是可以在构造器中赋值, 赋值之后就不可以修改
+
 ```ts
 class Person {
-    readonly name: string
-    constructor(name: string) {
-        this.name = name
-    }
+  readonly name: string
+  readonly friend?: Person
+  constructor(name: string, friend?: Person) {
+    this.name = name
+  }
 }
-
-const p = new Person('wts')
-console.log(p.name)
-// Cannot assign to 'name' because it is a read-only property.
-// p.name = 'coderwts'
-
-export {}
+const p = new Person("why", new Person("kobe"))
+p.name = '123'
 ```
 
+![image-20250814090628209](./22_typeScript(2).assets/image-20250814090628209.png)
 
+属性本身不能进行修改, 但是如果它是对象类型, 对象中的属性是可以修改
 
-![image-20210725213505626](C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210725213505626.png)
+```ts
+class Person {
+  age?: number
+  readonly friend?: Person
+  constructor(name: string, friend?: Person) {
+    this.friend = friend
+  }
+}
+
+const p = new Person("why", new Person("kobe"))
+console.log(p.friend)
+
+// 不可以直接修改friend
+// p.friend = new Person("james")
+if (p.friend) {
+  p.friend.age = 30
+} 
+```
 
 
 
@@ -769,11 +788,15 @@ export {}
 
 ```ts
 class Person {
+    // 规范：_开头表示私有属性
     private _name: string
     
+    // 访问器
     set name(newName) {
         this._name = newName
     }
+    
+    // 访问器
     get name() {
         return this._name
     }
@@ -784,12 +807,10 @@ class Person {
 
 const p = new Person('wts')
 p.name = 'coderWts'
-console.log(p.name)
+console.log(p.name) // coderwts
 ```
 
-
-
-<img src="C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210725215018727.png" alt="image-20210725215018727" style="zoom: 50%;" />
+如果类中有私有属性，想要访问它，可以增加访问器来获取或设置
 
 
 
@@ -803,8 +824,11 @@ console.log(p.name)
 
 ```ts
 class Student {
-    static time: string = '20:00'
+    // 这种属性被称为实例对象成员，必须通过new的方式创建一个对象，然后通过这个对象访问它
+    name: string = 'wts'
     
+    // 设置static后，只能通过Student类来访问这个属性，不能通过实例来访问
+    static time: string = '20:00'
     static attendClass() {
         console.log('去上课')
     }
@@ -814,7 +838,7 @@ console.log(Student.time)
 Student.attendClass()
 ```
 
-![image-20210725215448627](C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210725215448627.png)
+静态成员也被称为类属性，类方法
 
 
 
@@ -837,70 +861,63 @@ Student.attendClass()
 - 抽象类是不能被实例的话（也就是不能通过new创建） 
 - 抽象方法必须被子类实现，否则该类必须是一个抽象类；
 
-
-
-
-
-## 抽象类演练
+我们要实现一个方法makeArea,算每一个形状的面积，我们不可能在这个函数里面把每一个形状进行if判断来实现，那这个函数太大了，所以我们只调用传进来的形状的getArea方法，得出形状
 
 ```ts
-abstract class Shape {
-	abstract getArea(): number
+
+function makeArea(shape: any) {
+  return shape.getArea()
 }
 
-class Circle extends Shape {
-    private r: number
-    constructor(r: number) {
-        super()
-        this.r = r
-    }
-    
-    getArea() {
-        return this.r * this.r * 3.14
-    }
+// 矩形
+class Rectangle {
+  private width: number
+  private height: number
+
+  constructor(width: number, height: number) {
+    this.width = width
+    this.height = height
+  }
+
+  getArea() {
+    return this.width * this.height
+  }
 }
 
-class Rectangle extends Shape {
-    private width: number
-    private height: number
-    
-    constructor(width: number, height: number) {
-        super()
-        this.width = width
-        this.height = height
-    } 
-    getArea() {
-        return this.width * this.height
-    }
-}
+// 圆形
+class Circle {
+  private r: number
 
-const circle = new Circle(10)
+  constructor(r: number) {
+    this.r = r
+  }
+
+  getArea() {
+    return this.r * this.r * 3.14
+  }
+}
 const rectangle = new Rectangle(20, 30)
-
-function calcArea(shape: Shape) {
-    console.log(shape.getArea())
-}
-calcArea(circle)
-calcArea(rectangle)
+const circle = new Circle(10)
+console.log(makeArea(rectangle))
+console.log(makeArea(circle))
 ```
 
-
-
-
+这样做可以做解决我们把所有的逻辑放到makeArea中，而是自己处理自己的逻辑，但是有个问题，如果传入123，或者undefined他不会报错，那么我们需要对类型做检测
 
 ```ts
-
+// 对类型做检测
 function makeArea(shape: Shape) {
   return shape.getArea()
 }
 
 
 // 用抽象类的目的是，让makeArea的参数shape的类型是Shape，也就是说，如果想用这个方法，必须继承自Shape下面这个类，这样就实现了，不是所有参数都接受，更安全
-abstract class Shape {    //抽象类  抽象类不能被实例化    new Shape()  就会报错
-  abstract getArea(): number    //抽象方法，可以没有函数体，抽象方法必须在抽象类里面  抽象类里面的方法必须被子类实现
+abstract class Shape {    //抽象类 抽象类不能被实例化    new Shape()  就会报错
+  //抽象方法，可以没有函数体，抽象方法必须在抽象类里面抽象类里面的方法必须被子类实现
+  abstract getArea(): number    
 }
 
-
+// 矩形
 class Rectangle extends Shape {
   private width: number
   private height: number
@@ -916,6 +933,7 @@ class Rectangle extends Shape {
   }
 }
 
+// 圆形
 class Circle extends Shape {
   private r: number
 
@@ -940,7 +958,7 @@ console.log(makeArea(circle))
 // makeArea("123")
 ```
 
-![image-20210725224129840](C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210725224129840.png)
+上面我们抽象类中有一个抽象方法，抽象方法必须被子类实现，所以如果想讨巧传入new Shape()的话会报错的
 
 
 
@@ -967,11 +985,17 @@ const p2: Person = {
         console.log(this.name + ' running')
     }
 }
+
+
+function printPerson(p: Person) {
+  console.log(p.name)
+}
+
+printPerson(new Person('wts'))
+printPerson({name: "kobe", running: function() {}})
 ```
 
 
-
-<img src="C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210725224621306.png" alt="image-20210725224621306" style="zoom:50%;" />
 
 
 
@@ -1001,15 +1025,20 @@ interface Point {
 
 接下来我们继续学习一下接口的其他特性。
 
-<img src="C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210725225714213.png" alt="image-20210725225714213" style="zoom:50%;" />
+
+
+
 
 ## 可选属性
 
 接口中我们也可以定义可选属性：
 
+在其中可以定义可选类型
+
 ```ts
 interface Person {
     name: string
+    // 可选类型
     age?: number
     friend?: {
         name: string
@@ -1038,6 +1067,7 @@ console.log(person.friend?.name)
 
 ```ts
 interface Person {
+    // 只读类型
     readonly name: string
     age?: number
     readonly friend?: {
@@ -1073,6 +1103,7 @@ if (person.friend) {
 interface FrontLanguage {
     [index: number]: string
 }
+// 这个对象的key只能是number
 const frontend: FrontLanguage = {
     1: 'HTML',
     2: 'CSS',
@@ -1083,14 +1114,13 @@ interface LanguageBirth {
     [name: string]: number
     Java: number
 }
+// 这个对象的key只能是string
 const language: LanguageBirth = {
     'Java': 1995,
     'JavaScript': 1996,
     'C': 1972
 }
 ```
-
-<img src="C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210725230509636.png" alt="image-20210725230509636" style="zoom:50%;" />
 
 
 
@@ -1101,16 +1131,7 @@ const language: LanguageBirth = {
 前面我们都是通过interface来定义对象中普通的属性和方法的，实际上它也可以用来定义函数类型：
 
 ```ts
-interface CalcFunc {
-    (num1: number, num2: number): number
-}
-
-const add: 
-```
-
-
-
-```ts
+// 函数类型的接口
 interface CalcFunc {
     (num1: number, num2: number): number
 }
@@ -1129,8 +1150,6 @@ const sub: CalcFunc = (num1, num2) => {
 ```ts
 type CalcFunc = (num1: number, num2: number) => number
 ```
-
-![image-20210725231404101](C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210725231404101.png)
 
 
 
@@ -1152,6 +1171,8 @@ interface Animal {
     running: () => void
 }
 
+// 把Person和Animal组合在一起，支持单继承和多继承
+
 interface Student extends Person, Animal {
     sno: number
 }
@@ -1163,8 +1184,6 @@ const stu: Student = {
     running: function () {}
 }
 ```
-
-<img src="C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210725232400420.png" alt="image-20210725232400420" style="zoom:50%;" />
 
 
 
@@ -1179,27 +1198,49 @@ const stu: Student = {
 
 ```ts
 interface ISwim {
-    swimming: () => void
+  swimming: () => void
 }
 
-interface IRun {
-    running: () => void
+interface IEat {
+  eating: () => void
 }
 
-class Person implements ISwim, IRun {
-    swimming() {
-        console.log('swimming')
-    }
-    running() {
-        
-    }
+// 类实现接口
+class Animal {
+  
 }
 
-function swim(swimmer: ISwim) {
-    swimmer.swimming()
+// 继承: 只能实现单继承
+// 实现: 实现接口, 类可以实现多个接口，符合其中一个接口就行
+class Fish extends Animal implements ISwim, IEat {
+  swimming() {
+    console.log("Fish Swmming")
+  }
+
+  eating() {
+    console.log("Fish Eating")
+  }
 }
-const p = new Person()
-swim(p)
+
+
+class Person implements ISwim {
+  swimming() {
+    console.log("Person Swimming")
+  }
+}
+
+
+// 编写一些公共的API: 面向接口编程
+function swimAction(swimable: ISwim) {
+  swimable.swimming()
+}
+
+// 1.所有实现了接口的类对应的对象, 都是可以传入
+swimAction(new Fish())
+swimAction(new Person())
+
+// 这里也是可以的，这里虽然是一个对象，但是它符合接口
+swimAction({swimming: function() {}})
 ```
 
 
@@ -1249,6 +1290,7 @@ interface IRun {
 
 type NewType = Colorful & IRun
 
+// 需要同时满足两个类型
 const obj: NewType = {
     color: 'red',
     running: function () {
@@ -1277,16 +1319,19 @@ interface IPerson {
     name: string
     running: () => void
 }
-
+// 定义了两个Iperson,他们会合并
 interface IPerson {
     age:number
 }
+// 这样做的意义是，如果想给window加一些类型，我们可以自己添加后，会和内置的类型进行一个合并
+
 
 type Person = {
     name: string
     running: () => void
 }
 
+// 定义了两个Person，他们不会合并，并且会报错
 // error:Duplicate identifier 'Person'.ts(2300)
 type Person = {
     age: number
@@ -1315,7 +1360,7 @@ const p: IPerson = {
 }
 ```
 
-
+上面的age是不能加的，但是下面可以
 
 ```ts
 interface IPerson {
@@ -1328,21 +1373,40 @@ const obj = {
     age: 18,
     eating: function () {}
 }
-
+// freshness擦除,相当于在类型检测的时候把age擦除掉了
 const p: IPerson = obj
 ```
 
+这样不会报错，他是允许的
+
+这是因为TypeScript在字面量直接赋值的过程中，为了进行类型推导会进行严格的类型限制。 但是之后如果我们是将一个 变量标识符 赋值给其他的变量时，会进行freshness擦除操作。
+
+有什么用呢？
+
+```ts
+function printInfo(person: IPerson) {
+  console.log(person)
+}
+
+// 代码会报错
+printInfo({
+  name: "why",
+  age: 18,
+  height: 1.88,
+  address: "广州市"
+})
+
+const info = {
+  name: "why",
+  age: 18,
+  height: 1.88,
+  address: "广州市"
+}
+// 这里就不会报错了
+printInfo(info)
+```
 
 
-这是因为TypeScript在字面量直接赋值的过程中，为了进行类型推导会进行严格的类型限制。 
-
-- 但是之后如果我们是将一个 变量标识符 赋值给其他的变量时，会进行freshness擦除操作。
-
-<img src="C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210726220337576.png" alt="image-20210726220337576" style="zoom:50%;" />
-
-<img src="C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210726220345735.png" alt="image-20210726220345735" style="zoom: 50%;" />
-
-把这个对象赋值给一个变量，再传就可以
 
 
 
@@ -1354,6 +1418,7 @@ const p: IPerson = obj
 - 枚举允许开发者定义一组命名常量，常量可以是数字、字符串类型；
 
 ```ts
+// 枚举中的值一般都是大写
 enum Direction {
     LEFT,
     RIGHT,
@@ -1366,7 +1431,7 @@ function turnDirection(direction: Direction) {
         case Direction.LEFT:
             console.log('转向左边~')
             break;
-        case Direction.right:
+        case Direction.RIGHT:
             console.log('转向右边~')
             break;
         case Direction.TOP:
@@ -1379,15 +1444,19 @@ function turnDirection(direction: Direction) {
             const myDirection: never = direction
     }
 }
+turnDirection(Direction.LEFT)
+turnDirection(Direction.RIGHT)
+turnDirection(Direction.TOP)
+turnDirection(Direction.BOTTOM)
 ```
 
 
 
-<img src="C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210726221737061.png" alt="image-20210726221737061" style="zoom:50%;" />
+
 
 ## 枚举类型的值
 
-枚举类型默认是有值的，比如上面的枚举，默认值是这样的： 
+枚举类型默认是有值的，比如上面的枚举，默认值是这样的： 0 、1、2、3
 
 当然，我们也可以给枚举其他值：
 
@@ -1409,9 +1478,9 @@ enum Direction {
 ```ts
 enum Direction {
     LEFT = 100,
-    RIGHT,
-    TOP,
-    BOTTOM
+    RIGHT, // 101
+    TOP, // 102
+    BOTTOM // 103
 }
 ```
 
@@ -1419,8 +1488,8 @@ enum Direction {
 
 ```ts
 enum Direction {
-    LEFT,
-    RIGHT,
+    LEFT,	// 0
+    RIGHT,	// 1
     TOP = 'TOP',
     BOTTOM = 'BOTTOM'
 }
@@ -1476,7 +1545,7 @@ function foo<Type>(arg: Type): Type {
 }
 ```
 
-
+这种被称为类型的参数化，在定义这个函数时, 我不决定这些参数的类型，而是让调用者以参数的形式告知我这里的函数参数应该是什么类型
 
 这里我们可以使用两种方式来调用它： 
 
@@ -1485,14 +1554,18 @@ function foo<Type>(arg: Type): Type {
   - 在这里会推导出它们是 字面量类型的，因为字面量类型对于我们的函数也是适用的
 
 ```ts
-function foo<Type>(arg: Type): Type {
-    return arg
+function sum<Type>(num: Type): Type {
+  return num
 }
-foo<string>('abc')
-foo<number>(123)
 
-foo('abc')
-foo(123)
+// 1.调用方式一: 明确的传入类型
+sum<number>(20)
+sum<{name: string}>({name: "why"})
+sum<any[]>(["abc"])
+
+// 2.调用方式二: 类型推导
+sum(50)
+sum("abc")
 ```
 
 
@@ -1504,12 +1577,12 @@ foo(123)
 当然我们也可以传入多个类型：
 
 ```ts
-function foo<T, E>(a1: T, a2: E) {
+function foo<T, E, O>(arg1: T, arg2: E, arg3?: O, ...args: T[]) {
 
 }
+
+foo<number, string, boolean>(10, "abc", true)
 ```
-
-
 
 平时在开发中我们可能会看到一些常用的名称： 
 
@@ -1520,19 +1593,23 @@ function foo<T, E>(a1: T, a2: E) {
 
 
 
+
+
 ## 泛型接口
 
 在定义接口的时候我们也可以使用泛型：
 
 ```ts
-interface IFoo<T> {
+interface IFoo<T, K> {
     initialValue: T,
+    name: K,
     valueList: T[],
     handleValue: (value: T) => void
 }
 
-const foo: IFoo<number> = {
+const foo: IFoo<number, string> = {
     initialValue: 0,
+    name: 'wts',
     valueList: [0, 1, 3],
     handleValue: function (value: number) {
         console.log(value)
@@ -1540,14 +1617,29 @@ const foo: IFoo<number> = {
 }
 ```
 
-
+他不会默认推导，所以我们可以写一个默认类型
 
 ```ts
-interface IFoo<T = number> {
-    initialValue: T,
-    valueList: T[],
-    handleValue: (value: T) => void
+interface IPerson<T1 = string, T2 = number> {
+  name: T1
+  age: T2
 }
+
+// 这里默认不会推导
+const p: IPerson = {
+  name: "why",
+  age: 18
+}
+```
+
+这里是默认推导
+
+```ts
+function foo<T, E, O>(arg1: T, arg2: E, arg3?: O, ...args: T[]) {
+
+}
+// 这里会默认推导
+foo(10, "abc", true)
 ```
 
 
@@ -1568,10 +1660,22 @@ class Point<T> {
         this.y = y
     }
 }
+
+// 这里可以推导出来
 const p1 = new Point(10, 20)
+
+// 这两种传入类型都可以
 const p2 = new Point<number>(10, 20)
 const p3: Point<number> = new Point(10, 20)
 ```
+
+Array类型实际上和上面一样，拿到类，然后给类传一个泛型
+
+```ts
+let names: Array<string> = ['lilei', 'wts']	// 不推荐
+```
+
+能类型推导尽量类型推导
 
 
 
@@ -1589,6 +1693,7 @@ interface ILength {
     length: number
 }
 
+// 针对传进来的类型做一个限制（可能传进来的没有length属性）
 function getLength<T extends ILength>(args: T) {
     return args.length
 }
@@ -1640,16 +1745,6 @@ export namespace Price {
     }
 }
 ```
-
-
-
-<img src="C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210727230226008.png" alt="image-20210727230226008" style="zoom:50%;" />
-
-<img src="C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210727230250007.png" alt="image-20210727230250007" style="zoom:50%;" />
-
-
-
-
 
 
 
