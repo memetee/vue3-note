@@ -755,7 +755,7 @@ const p = new Person("why", new Person("kobe"))
 p.name = '123'
 ```
 
-![image-20250814090628209](./22_typeScript(2).assets/image-20250814090628209.png)
+![image-20250814090628209](./assets/22_typeScript(2).assets/image-20250814090628209.png)
 
 属性本身不能进行修改, 但是如果它是对象类型, 对象中的属性是可以修改
 
@@ -1712,7 +1712,8 @@ console.log(getLength({length: 100, name: 'wts'}))
 TypeScript支持两种方式来控制我们的作用域： 
 
 - 模块化：每个文件可以是一个独立的模块，支持ES Module，也支持CommonJS； 
-- 命名空间：通过namespace来声明一个命名空间
+
+./utils/math.ts
 
 ```ts
 export function add(num1: number, num2: number) {
@@ -1724,27 +1725,65 @@ export function sub(num1: number, num2: number) {
 }
 ```
 
+./main.ts
+
+```ts
+import { add, sub } from "./utils/math";
+console.log(add(20, 30));
+console.log(sub(20, 30));
+```
+
+注意，这里用到了webpack，采用的是前面ts中的webpack配置
+
+上面是第一种作用域，模块化开发作用域
+
 
 
 
 
 ## 命名空间namespace
 
-命名空间在TypeScript早期时，称之为内部模块，主要目的是将一个模块内部再进行作用域的划分，防止一些命名 冲突的问题。
+命名空间：通过namespace来声明一个命名空间
+
+命名空间在TypeScript早期时，称之为内部模块，主要目的是将一个模块内部再进行作用域的划分，防止一些命名冲突的问题。
+
+./utils/format.ts
 
 ```ts
-export namespace Time {
-    export function format(time: string) {
-        return '2022-02-22'
-    }
+导出命名空间
+export namespace time {
+  // 这里的format也需要导出
+  export function format(time: string) {
+    return "2222-02-22"
+  }
+
+  export function foo() {
+
+  }
+
+  export let name: string = "abc"
 }
 
-export namespace Price {
-    export function format(price: number) {
-        return '222.22'
-    }
+export namespace price {
+  export function format(price: number) {
+    return "99.99"
+  }
 }
+
+
 ```
+
+./main.ts
+
+```ts
+// 导入命名空间
+import { time, price } from './utils/format'
+
+console.log(time.format("11111111"))
+console.log(price.format(123))
+```
+
+
 
 
 
@@ -1752,52 +1791,79 @@ export namespace Price {
 
 ## 类型的查找
 
-之前我们所有的typescript中的类型，几乎都是我们自己编写的，但是我们也有用到一些其他的类型：
-
-```ts
-const imageEl = document.getElementById('image') as HTMLImageElement
-```
-
-大家是否会奇怪，我们的HTMLImageElement类型来自哪里呢？甚至是document为什么可以有getElementById的方 法呢？ 
-
-- 其实这里就涉及到typescript对类型的管理和查找规则了。
-
-我们这里先给大家介绍另外的一种typescript文件：.d.ts文件 
-
-- 我们之前编写的typescript文件都是 .ts 文件，这些文件最终会输出 .js 文件，也是我们通常编写代码的地方； 
-- 还有另外一种文件 .d.ts 文件，它是用来做类型的声明(declare)。 它仅仅用来做类型检测，告知typescript我们有哪 些类型；
-
-那么typescript会在哪里查找我们的类型声明呢？ 
-
-- 内置类型声明； 
-- 外部定义类型声明； 
-- 自己定义类型声明；
-
 
 
 下载axios
 
 `npm install axios`
 
-![image-20210728224956360](C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210728224956360.png)
+调用接口
 
-调这个接口
+./main.ts
 
-![image-20210728225047873](C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210728225047873.png)
+```ts
+import axios from 'axios'
+axios.get("http://123.207.32.32:8000/home/multidata").then(res => {
+  console.log(res)
+})
+
+```
+
+上面这样使用是可以拿到数据的
+
+![image-20250814142153158](./assets/22_typeScript(2).assets/image-20250814142153158.png)
+
+
+
+
 
 下载lodash
 
 `npm install lodash`
 
-![image-20210728225208523](C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210728225208523.png)
+./main.ts
+
+```ts
+import axios from 'axios'
+import lodash from 'lodash'
+axios.get("http://123.207.32.32:8000/home/multidata").then(res => {
+  console.log(res)
+})
+
+```
 
 这里会报错
 
-原因是我们没有声明过lodash   就像 `codeyWhy.getElementById` 我们有声明过codeywhy吗？没有，所以过不了编译
+![image-20250814142257854](./assets/22_typeScript(2).assets/image-20250814142257854.png)
 
-那么为什么axios可以，但是lodash不行呢？
+同样是第三方库，axios可以正常使用lodash却会报错，为什么呢？
+
+在ts中用`document.getElementById()`这种代码是可以正常使用的,那`coderWts.getElementById`可以用吗，很明显不能的那为什么呢？哪里声明过document呢？
+
+是因为只有声明过的就可以用，没有声明过的就不能用，document和axios都是声明过的，而coderWts没有生命过，lodash也没有声明过，所以他们不行
 
 那么如何声明呢？
+
+之前我们所有的typescript中的类型，几乎都是我们自己编写的，但是我们也有用到一些其他的类型：
+
+```ts
+const imageEl = document.getElementById('image') as HTMLImageElement
+```
+
+大家是否会奇怪，我们的HTMLImageElement类型来自哪里呢？甚至是document为什么可以有getElementById的方法呢？ 
+
+- 其实这里就涉及到typescript对类型的管理和查找规则了。
+
+我们这里先给大家介绍另外的一种typescript文件：.d.ts文件 
+
+- 我们之前编写的typescript文件都是 .ts 文件，这些文件最终会输出 .js 文件，也是我们通常编写代码的地方； 
+- 还有另外一种文件 .d.ts 文件，它是用来做类型的声明(declare)。 它仅仅用来做类型检测，告知typescript我们有哪些类型；
+
+那么typescript会在哪里查找我们的类型声明呢？ 
+
+- 内置类型声明； 
+- 外部定义类型声明； 
+- 自己定义类型声明；
 
 
 
@@ -1815,7 +1881,11 @@ const imageEl = document.getElementById('image') as HTMLImageElement
 
 document.getElement类型
 
-![image-20210729222439630](C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210729222439630.png)
+在这里声明的内置声明
+
+![image-20250814143200084](./assets/22_typeScript(2).assets/image-20250814143200084.png)
+
+coderWts.getElement没有声明，所以他不行~
 
 
 
@@ -1826,6 +1896,8 @@ document.getElement类型
 这些库通常有两种类型声明方式： 
 
 方式一：在自己库中进行类型声明（编写.d.ts文件），比如axios 
+
+![image-20250814143415903](./assets/22_typeScript(2).assets/image-20250814143415903.png)
 
 方式二：通过社区的一个公有库DefinitelyTyped存放类型声明文件
 
@@ -1838,113 +1910,110 @@ document.getElement类型
 - 情况一：我们使用的第三方库是一个纯的JavaScript库，没有对应的声明文件；比如lodash 
 - 情况二：我们给自己的代码中声明一些类型，方便在其他地方直接进行使用；
 
-axios在这里声明的
-
-![image-20210729222915424](C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210729222915424.png)
-
-安装lodash的声明文件
-
-![image-20210729223833946](C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210729223833946.png)
-
-![image-20210729223935891](C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210729223935891.png)
 
 
 
-删除掉自己定义
 
-![image-20210729224344426](C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210729224344426.png)
+但是lodash没有自己的类型声明文件，安装lodash的声明文件`npm install @types/lodash --save-dev`
 
-![image-20210729224609314](C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210729224609314.png)
+![image-20250814143813226](./assets/22_typeScript(2).assets/image-20250814143813226.png)
 
-
-
-![image-20210729224701897](C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210729224701897.png)
+安装完声明文件，就不会报错了
 
 
 
-![image-20210729225839056](C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210729225839056.png)
-
-![image-20210729225913451](C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210729225913451.png)
 
 
+## 自定义声明模块
 
-这样才能认识
+虽然安装完了lodash，但是假设我们没有的话，怎么自己编写loadash的声明文件呢？
 
-![image-20210729225957490](C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210729225957490.png)
+声明模块的语法: declare module '模块名' {}。 
 
-![image-20210729230217900](C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210729230217900.png)
+- 在声明模块的内部，我们可以通过 export 导出对应库的类、函数等；
+
+./src/coderwts.d.ts
+
+```ts
+// 给lodash声明模块
+declare module 'lodash'{
+    
+}
+```
+
+一旦写了这个代码，我们引入lodash也不会报错
+
+虽然引入使用不会报错，但是使用的话还是有问题的
+
+![image-20250814144210205](./assets/22_typeScript(2).assets/image-20250814144210205.png)
+
+那我们可以在模块中声明join这个方法
+
+./src/coderwts.d.ts
+
+```ts
+// 给lodash声明模块
+declare module 'lodash'{
+    export function join(arr: any[]): void
+}
+```
+
+这样声明以后使用join方法就不会报错了
+
+![image-20250814144418381](./assets/22_typeScript(2).assets/image-20250814144418381.png)
+
+以上就是自定义声明模块文件，当然还可以声明变量，函数，类
 
 
-
-![image-20210729231204629](C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210729231204629.png)
-
-
-
-![image-20210730223954978](C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210730223954978.png)
-
-
-
-![image-20210730224127107](C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210730224127107.png)
-
-![image-20210730224337145](C:\Users\小山\AppData\Roaming\Typora\typora-user-images\image-20210730224337145.png)
-
-命名空间和模块是有区别的，比如我们在这里声明的命名空间，引用了jquery以后，是没办法直接用$的，需要先声明命名空间
 
 
 
 ## 声明变量-函数-类
 
-```ts
-let wName = 'coderwts'
-let wAge = 18
-let wHeight = 1.88
+在这里声明了变量，在其他地方能打印吗？
 
-function wFoo() {
-    console.log('wFoo')
-}
-function wBar() {
-    console.log('wBar')
-}
-function Person(name, age) {
-    this.name = name
-    this.age = age
-}
-```
+![image-20250814144836107](./assets/22_typeScript(2).assets/image-20250814144836107.png)
 
-
+按道理来说是能的，因为所有代码编译后都是一个js文件，js文件会在body的最后插入进来，所以我们在其他地方js文件中应该是可以使用上面三个变量的，但是实际情况是如果使用了会报错，因为typescript不知道你在这里有这么些变量，那么怎么办呢？告诉typescript你有这几个变量
 
 ```ts
-declare let wName: string;
-declare let wAge: number;
-declare let wHeight: number;
+declare let whyName: string
+declare let whyAge: number
+declare let whyHeight: number
 
-declare function wFoo(): void
-declare function wBar(): void
+declare function whyFoo(): void
+
 declare class Person {
-    name: string
-    age: number
-    
-    constructor(name: string, age: number) {}
+  name: string
+  age: number
+  constructor(name: string, age: number)
 }
+
 ```
 
+这里的声明文件是不需要赋值的，他的作用就是告诉typescript我有这样的声明，不要给我报错
 
+当生命完以后，再去使用他们是没有问题的
 
+这里不用引用，直接使用就行
 
-
-## 声明模块
-
-我们也可以声明模块，比如lodash模块默认不能使用的情况，可以自己来声明这个模块：
+./main.ts
 
 ```ts
-declare module 'lodash' {
-    export function join(args: any[]): any
-}
+console.log(whyName)
+console.log(whyAge)
+console.log(whyHeight)
+whyFoo()
+
+const p = new Person("why", 18)
+console.log(p)
 ```
 
-声明模块的语法: declare module '模块名' {}。 
+![image-20250814145337015](./assets/22_typeScript(2).assets/image-20250814145337015.png)
 
-- 在声明模块的内部，我们可以通过 export 导出对应库的类、函数等；
+
+
+
 
 
 
@@ -1954,6 +2023,23 @@ declare module 'lodash' {
 
 - 比如在开发vue的过程中，默认是不识别我们的.vue文件的，那么我们就需要对其进行文件的声明； 
 - 比如在开发中我们使用了 jpg 这类图片文件，默认typescript也是不支持的，也需要对其进行声明；
+
+![image-20250814145947103](./assets/22_typeScript(2).assets/image-20250814145947103.png)
+
+不认识这个图片，需要对图片做声明
+
+```ts
+// 声明文件
+declare module '*.jpg'
+declare module '*.jpeg'
+declare module '*.png'
+declare module '*.svg'
+declare module '*.gif'
+```
+
+当这样声明完以后，引入图片就不会报错了，该怎么用就怎么用了
+
+这里的.vue文件也是一样的
 
 ```ts
 declare module '*.vue' {
@@ -1979,6 +2065,10 @@ declare module '*.jpg' {
 
 - CDN地址： https://cdn.bootcdn.net/ajax/libs/jquery/3.6.0/jquery.js
 
+![image-20250814151911626](./assets/22_typeScript(2).assets/image-20250814151911626.png)
+
+可以在html这里使用，但是不能再下面的文件使用，如果要使用，也需要声明
+
 我们可以进行命名空间的声明：
 
 ```ts
@@ -1989,7 +2079,10 @@ declare namespace $ {
 
 在main.ts中就可以使用了：
 
+./main.ts
+
 ```ts
+// 这里是命名空间，因为是$.
 $.ajax({
     url: 'http://123.207.32.32:8000/home/multidata',
     success: (res: any) => {
@@ -1997,6 +2090,8 @@ $.ajax({
     }
 })
 ```
+
+以上就是全局声明各种格式的文件、变量、模块了
 
 
 
